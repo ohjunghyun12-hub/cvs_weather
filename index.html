@@ -95,9 +95,10 @@
             <!-- 주간 날씨 모니터링 판넬 -->
             <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200 lg:col-span-2">
                 <div class="border-b border-slate-100 pb-2 mb-4 flex justify-between items-center">
+                    <!-- [수정 반영] 타이틀 문구 변경 -->
                     <h3 class="font-bold text-slate-900 text-sm flex items-center">
                         <i class="fa-solid fa-calendar-week text-cyan-600 mr-2"></i>
-                        실시간 날짜 연동 주간 기상 분석
+                        주간 기상 분석(실시간 날짜 연동)
                     </h3>
                     <span id="todayBadge" class="text-xs bg-slate-100 text-slate-600 font-medium px-2.5 py-1 rounded-md"></span>
                 </div>
@@ -192,11 +193,10 @@
 
         let currentWeek = 'this'; 
 
-        // [변경사항 반영] 접속한 시점의 실제 날짜를 기반으로 계산하도록 수정
         function getDatesList(week) {
-            const baseDate = new Date(); // 실시간 오늘 날짜 연동
+            const baseDate = new Date(); 
             if (week === 'next') {
-                baseDate.setDate(baseDate.getDate() + 7); // 차주 선택 시 오늘로부터 7일 뒤 기준
+                baseDate.setDate(baseDate.getDate() + 7); 
             }
             
             const daysShort = ["일", "월", "화", "수", "목", "금", "토"];
@@ -384,7 +384,6 @@
             return guide;
         }
 
-        // [변경사항 반영] 오늘 날짜를 읽어와 상단 뱃지에 출력하도록 자동 연동
         function calculateWeatherAndCoaching() {
             const now = new Date();
             const days = ["일", "월", "화", "수", "목", "금", "토"];
