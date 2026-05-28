@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GS25 지역별 주간 날씨 및 발주 가이드</title>
+    <title>GS25 주간 날씨 연동형 발주 코칭 대시보드</title>
     <!-- Tailwind CSS 및 FontAwesome 아이콘 로드 -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,71 +19,67 @@
         <div class="max-w-6xl mx-auto px-4 py-5 flex justify-between items-center">
             <div class="flex items-center space-x-3">
                 <i class="fa-solid fa-cloud-sun-rain text-2xl text-cyan-200"></i>
-                <h1 class="text-xl font-bold tracking-tight">GS25 지역별 주간 날씨 및 발주 가이드</h1>
+                <h1 class="text-xl font-bold tracking-tight">GS25 지역 날씨 연동 발주 코칭 대시보드</h1>
             </div>
+            <div class="bg-blue-900/50 px-3 py-1 rounded text-xs font-medium">OFC 전용 현장지도 도구</div>
         </div>
     </header>
 
     <!-- 메인 컨테이너 -->
-    <main class="max-w-6xl mx-auto px-4 mt-6 space-y-6">
+    <main class="max-w-6xl mx-auto px-4 mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- [위치 변경] 상단 영역: 조건 선택 및 주간 기상 정보가 나란히 배치 -->
-        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- 왼쪽: 조건 선택 및 주간 기상 정보 -->
+        <section class="lg:col-span-1 space-y-6">
             
             <!-- 환경 설정 카드 -->
-            <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200 space-y-4 flex flex-col justify-between">
-                <div>
-                    <div class="border-b border-slate-100 pb-2 mb-3">
-                        <h2 class="font-bold text-slate-900 flex items-center"><i class="fa-solid fa-map-location-dot text-blue-600 mr-2"></i>지역 및 시점 선택</h2>
-                    </div>
+            <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200 space-y-4">
+                <div class="border-b border-slate-100 pb-2">
+                    <h2 class="font-bold text-slate-900 flex items-center"><i class="fa-solid fa-map-location-dot text-blue-600 mr-2"></i>지역 및 시점 선택</h2>
+                </div>
 
-                    <!-- 1. 지역 선택 -->
-                    <div class="grid grid-cols-2 gap-2 mb-3">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">시/도</label>
-                            <select id="sidoSelect" onchange="updateSigungu()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                                <option value="daejeon">대전광역시</option>
-                                <option value="sejong">세종특별자치시</option>
-                                <option value="chungnam">충청남도</option>
-                                <option value="gwangju">광주광역시</option>
-                                <option value="jeonbuk">전북특별자치도</option>
-                                <option value="jeonnam">전라남도</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">시/군/구</label>
-                            <select id="sigunguSelect" onchange="calculateWeatherAndCoaching()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                                <!-- 자바스크립트에서 동적 생성 -->
-                            </select>
-                        </div>
+                <!-- 1. 지역 선택 (시/도 및 시/군/구 예시) -->
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">시/도</label>
+                        <select id="sidoSelect" onchange="updateSigungu()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="seoul">서울특별시</option>
+                            <option value="gyeonggi">경기도</option>
+                            <option value="busan">부산광역시</option>
+                        </select>
                     </div>
-
-                    <!-- 2. 주차 선택 -->
-                    <div class="mb-3">
-                        <label class="block text-xs font-bold text-slate-500 mb-1">코칭 대상 주차</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <button id="btnThisWeek" onclick="setWeek('this')" class="py-2 text-xs font-bold rounded-lg border bg-blue-600 text-white border-blue-600">금주 예보</button>
-                            <button id="btnNextWeek" onclick="setWeek('next')" class="py-2 text-xs font-bold rounded-lg border bg-white text-slate-600 border-slate-300 hover:bg-slate-50">차주 예보</button>
-                        </div>
-                    </div>
-
-                    <!-- 3. 상권 분류 -->
-                    <div class="mb-3">
-                        <label class="block text-xs font-bold text-slate-500 mb-1">점포 상권 유형</label>
-                        <select id="sangkwonSelect" onchange="calculateWeatherAndCoaching()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                            <option value="apart">아파트주거</option>
-                            <option value="villa">빌라주거</option>
-                            <option value="single">소가구주거</option>
-                            <option value="work">근무지(오피스/공단)</option>
-                            <option value="hotplace">유동강세(대학가/번화가)</option>
-                            <option value="travel">여행지 / 유원지</option>
-                            <option value="special">특수/기타</option>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">시/군/구</label>
+                        <select id="sigunguSelect" onchange="calculateWeatherAndCoaching()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <!-- 자바스크립트에서 동적 생성 -->
                         </select>
                     </div>
                 </div>
 
+                <!-- 2. 주차 선택 (금주 / 차주) -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">코칭 대상 주차</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="btnThisWeek" onclick="setWeek('this')" class="py-2 text-xs font-bold rounded-lg border bg-blue-600 text-white border-blue-600">금주 예보</button>
+                        <button id="btnNextWeek" onclick="setWeek('next')" class="py-2 text-xs font-bold rounded-lg border bg-white text-slate-600 border-slate-300 hover:bg-slate-50">차주 예보</button>
+                    </div>
+                </div>
+
+                <!-- 3. GS25 표준 상권 분류 -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">점포 상권 유형</label>
+                    <select id="sangkwonSelect" onchange="calculateWeatherAndCoaching()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <option value="apart">아파트주거</option>
+                        <option value="villa">빌라주거</option>
+                        <option value="single">소가구주거</option>
+                        <option value="work">근무지(오피스/공단)</option>
+                        <option value="hotplace">유동강세(대학가/번화가)</option>
+                        <option value="travel">旅行지 / 유원지</option>
+                        <option value="special">특수/기타(교내, 병원, 터미널 등)</option>
+                    </select>
+                </div>
+
                 <!-- 4. 특수 이벤트 체크 -->
-                <div class="flex items-center pt-2 border-t border-slate-100">
+                <div class="flex items-center pt-1">
                     <input type="checkbox" id="worldcupCheck" checked onchange="calculateWeatherAndCoaching()" class="w-4 h-4 text-blue-600 bg-slate-100 border-slate-300 rounded focus:ring-blue-500">
                     <label for="worldcupCheck" class="ml-2 text-xs font-bold text-slate-700 select-none flex items-center">
                         <span>6월 월드컵 경기 일정 포함</span>
@@ -92,31 +88,26 @@
                 </div>
             </div>
 
-            <!-- 주간 날씨 모니터링 판넬 (상단 우측 2칸 차지하여 가로로 더 넓게 보이게 배치) -->
-            <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200 lg:col-span-2">
-                <div class="border-b border-slate-100 pb-2 mb-4 flex justify-between items-center">
-                    <h3 class="font-bold text-slate-900 text-sm flex items-center">
-                        <i class="fa-solid fa-calendar-week text-cyan-600 mr-2"></i>
-                        실시간 날짜 연동 주간 기상 분석 및 공휴일 표시
-                    </h3>
-                    <span id="todayBadge" class="text-xs bg-slate-100 text-slate-600 font-medium px-2.5 py-1 rounded-md"></span>
+            <!-- 선택 지역 주간 날씨 모니터링 판넬 -->
+            <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200">
+                <div class="border-b border-slate-100 pb-2 mb-3">
+                    <h3 class="font-bold text-slate-900 text-sm flex items-center"><i class="fa-solid fa-calendar-week text-cyan-600 mr-2"></i>주간 기상 분석 결과</h3>
                 </div>
-                <!-- 가로 스크롤 혹은 유연한 배치를 위해 grid-cols-2 sm:grid-cols-4 md:grid-cols-7 구조 사용 -->
-                <div id="weeklyWeatherContainer" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2.5">
-                    <!-- 데이터 렌더링 -->
+                <div id="weeklyWeatherContainer" class="space-y-2">
+                    <!-- 자바스크립트로 요일별 주간 날씨 카드 렌더링 -->
                 </div>
             </div>
         </section>
 
-        <!-- 하단 영역: 실시간 발주 코칭 솔루션 및 카테고리 가이드 -->
-        <section class="space-y-6">
+        <!-- 오른쪽: 실시간 주간 날씨 연동 코칭 솔루션 출력부 -->
+        <section class="lg:col-span-2 space-y-6">
             
-            <!-- 경영주 발주 코칭 스크립트 -->
+            <!-- 점주 대화용 실시간 브리핑 요약 -->
             <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                     <h2 class="text-base font-bold text-slate-900 flex items-center">
                         <i class="fa-solid fa-comment-sms text-cyan-500 mr-2"></i>
-                        경영주 발주 코칭 가이드 스크립트
+                        OFC 현장 경영주 발주 코칭 스크립트
                     </h2>
                     <button onclick="copyScript()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2.5 py-1.5 rounded flex items-center transition">
                         <i class="fa-regular fa-copy mr-1"></i> 스크립트 복사
@@ -127,7 +118,7 @@
                 </blockquote>
             </div>
 
-            <!-- 카테고리별 상세 가이드라인 -->
+            <!-- 카테고리별 상세 발주 가이드라인 -->
             <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200 space-y-5">
                 <div class="border-b border-slate-100 pb-2">
                     <h3 class="font-bold text-slate-900 text-sm flex items-center"><i class="fa-solid fa-boxes-stacked text-indigo-600 mr-2"></i>카테고리별 종합 발주 가이드</h3>
@@ -170,78 +161,123 @@
         </section>
     </main>
 
-    <!-- 스크립트 엔진부 -->
+    <!-- 날씨 시뮬레이션 및 데이터 매핑 엔진 로직 -->
     <script>
-        const regionStructure = {
-            daejeon: ["동구", "중구", "서구", "유성구", "대덕구"],
-            sejong: ["세종특별자치시"],
-            chungnam: ["천안시 동남구", "천안시 서북구", "공주시", "보령시", "아산시", "서산시", "논산시", "계룡시", "당진시", "금산군", "부여군", "서천군", "청양군", "홍성군", "예산군", "태안군"],
-            gwangju: ["동구", "서구", "남구", "북구", "광산구"],
-            jeonbuk: ["전주시 완산구", "전주시 덕진구", "군산시", "익산시", "정읍시", "남원시", "김제시", "완주군", "진안군", "무주군", "장수군", "임실군", "순창군", "고창군", "부안군"],
-            jeonnam: ["목포시", "여수시", "순천시", "나주시", "광양시", "담양군", "곡성군", "구례군", "고흥군", "보성군", "화순군", "장흥군", "강진군", "해남군", "영암군", "무안군", "함평군", "영광군", "장성군", "완도군", "진도군", "신안군"]
-        };
-
-        const sidoLabels = {
-            daejeon: "대전광역시", sejong: "세종특별자치시", chungnam: "충청남도",
-            gwangju: "광주광역시", jeonbuk: "전북특별자치도", jeonnam: "전라남도"
-        };
-
-        // 대한민국 공휴일 마스터 정의 (월/일 매칭용)
-        const nationalHolidays = {
-            "01-01": "신정", "03-01": "삼일절", "05-05": "어린이날", "06-06": "현충일", 
-            "08-15": "광복절", "10-03": "개천절", "10-09": "한글날", "12-25": "크리스마스"
-        };
-
-        let currentWeek = 'this'; 
-
-        // 상단 날짜 및 요일 구하기 알고리즘 (2026년 5월 28일 기준 시뮬레이션)
-        function getDatesList(week) {
-            const baseDate = new Date(2026, 4, 28); // 2026년 5월 28일 (목요일)
-            if (week === 'next') {
-                baseDate.setDate(baseDate.getDate() + 7); // 차주 선택 시 정확히 일주일 뒤부터 계산
+        // 시군구 가상 날씨 데이터 마스터 테이블 (5월 말 ~ 6월 초 가정 데이터셋)
+        const weatherDatabase = {
+            seoul: {
+                gangnam: {
+                    this: [
+                        { day: "월", temp: 24, status: "perfect", icon: "fa-sun" },
+                        { day: "화", temp: 26, status: "hot_early", icon: "fa-sun" },
+                        { day: "수", temp: 27, status: "hot_early", icon: "fa-sun" },
+                        { day: "목", temp: 28, status: "hot_early", icon: "fa-cloud-sun" },
+                        { day: "금", temp: 25, status: "shower", icon: "fa-cloud-showers-heavy" },
+                        { day: "토", temp: 26, status: "hot_early", icon: "fa-sun" },
+                        { day: "일", temp: 27, status: "hot_early", icon: "fa-sun" }
+                    ],
+                    next: [
+                        { day: "월", temp: 30, status: "hot_early", icon: "fa-sun" },
+                        { day: "화", temp: 33, status: "hot_core", icon: "fa-temperature-high" },
+                        { day: "수", temp: 34, status: "hot_core", icon: "fa-temperature-high" },
+                        { day: "목", temp: 29, status: "shower", icon: "fa-cloud-rain" },
+                        { day: "금", temp: 24, status: "rain_heavy", icon: "fa-umbrella" },
+                        { day: "토", temp: 23, status: "rain_heavy", icon: "fa-umbrella" },
+                        { day: "일", temp: 26, status: "hot_early", icon: "fa-sun" }
+                    ]
+                },
+                jongno: {
+                    this: [
+                        { day: "월", temp: 23, status: "perfect", icon: "fa-sun" },
+                        { day: "화", temp: 25, status: "hot_early", icon: "fa-sun" },
+                        { day: "수", temp: 24, status: "perfect", icon: "fa-cloud" },
+                        { day: "목", temp: 25, status: "hot_early", icon: "fa-sun" },
+                        { day: "금", temp: 22, status: "shower", icon: "fa-cloud-rain" },
+                        { day: "토", temp: 26, status: "hot_early", icon: "fa-sun" },
+                        { day: "일", temp: 26, status: "hot_early", icon: "fa-sun" }
+                    ],
+                    next: [
+                        { day: "월", temp: 29, status: "hot_early", icon: "fa-sun" },
+                        { day: "화", temp: 31, status: "hot_early", icon: "fa-sun" },
+                        { day: "수", temp: 33, status: "hot_core", icon: "fa-temperature-high" },
+                        { day: "목", temp: 32, status: "hot_early", icon: "fa-cloud-sun" },
+                        { day: "금", temp: 28, status: "hot_early", icon: "fa-sun" },
+                        { day: "토", temp: 27, status: "hot_early", icon: "fa-sun" },
+                        { day: "일", temp: 28, status: "hot_early", icon: "fa-sun" }
+                    ]
+                }
+            },
+            gyeonggi: {
+                suwon: {
+                    this: [
+                        { day: "월", temp: 24, status: "perfect", icon: "fa-sun" },
+                        { day: "화", temp: 26, status: "hot_early", icon: "fa-sun" },
+                        { day: "수", temp: 25, status: "hot_early", icon: "fa-sun" },
+                        { day: "목", temp: 23, status: "shower", icon: "fa-cloud-rain" },
+                        { day: "금", temp: 22, status: "shower", icon: "fa-cloud-rain" },
+                        { day: "토", temp: 25, status: "hot_early", icon: "fa-sun" },
+                        { day: "일", temp: 26, status: "hot_early", icon: "fa-sun" }
+                    ],
+                    next: [
+                        { day: "월", temp: 28, status: "hot_early", icon: "fa-sun" },
+                        { day: "화", temp: 30, status: "hot_early", icon: "fa-sun" },
+                        { day: "수", temp: 32, status: "hot_early", icon: "fa-sun" },
+                        { day: "목", temp: 33, status: "hot_core", icon: "fa-temperature-high" },
+                        { day: "금", temp: 31, status: "hot_early", icon: "fa-sun" },
+                        { day: "토", temp: 29, status: "hot_early", icon: "fa-sun" },
+                        { day: "일", temp: 28, status: "hot_early", icon: "fa-sun" }
+                    ]
+                }
+            },
+            busan: {
+                haeundae: {
+                    this: [
+                        { day: "월", temp: 22, status: "perfect", icon: "fa-sun" },
+                        { day: "화", temp: 23, status: "perfect", icon: "fa-sun" },
+                        { day: "수", temp: 24, status: "perfect", icon: "fa-cloud-sun" },
+                        { day: "목", temp: 25, status: "hot_early", icon: "fa-sun" },
+                        { day: "금", temp: 26, status: "hot_early", icon: "fa-sun" },
+                        { day: "토", temp: 27, status: "hot_early", icon: "fa-sun" },
+                        { day: "일", temp: 26, status: "hot_early", icon: "fa-sun" }
+                    ],
+                    next: [
+                        { day: "월", temp: 25, status: "hot_early", icon: "fa-sun" },
+                        { day: "화", temp: 24, status: "rain_heavy", icon: "fa-umbrella" },
+                        { day: "수", temp: 23, status: "rain_heavy", icon: "fa-umbrella" },
+                        { day: "목", temp: 25, status: "shower", icon: "fa-cloud-rain" },
+                        { day: "금", temp: 28, status: "hot_early", icon: "fa-sun" },
+                        { day: "토", temp: 30, status: "hot_early", icon: "fa-sun" },
+                        { day: "일", temp: 31, status: "hot_early", icon: "fa-sun" }
+                    ]
+                }
             }
-            
-            const daysShort = ["일", "월", "화", "수", "목", "금", "토"];
-            let result = [];
+        };
 
-            for(let i=0; i<7; i++) {
-                let tempDate = new Date(baseDate);
-                tempDate.setDate(baseDate.getDate() + i);
+        const sigunguLabels = {
+            gangnam: "강남구", jongno: "종로구", suwon: "수원시", haeundae: "해운대구"
+        };
 
-                let month = String(tempDate.getMonth() + 1).padStart(2, '0');
-                let date = String(tempDate.getDate()).padStart(2, '0');
-                let mdKey = `${month}-${date}`;
-                
-                let holidayName = nationalHolidays[mdKey] || null;
-                // 일요일이거나 공휴일 매칭 시 쉬는날 플래그 가동
-                let isRedDay = (tempDate.getDay() === 0 || holidayName !== null); 
+        let currentWeek = 'this'; // 기본값 금주
 
-                result.push({
-                    dateString: `${tempDate.getMonth() + 1}/${tempDate.getDate()}`,
-                    dayLabel: daysShort[tempDate.getDay()],
-                    isRedDay: isRedDay,
-                    holidayName: holidayName
-                });
-            }
-            return result;
-        }
-
+        // 시도 선택 변경 시 시군구 자동 동적 드롭다운 세팅
         function updateSigungu() {
             const sido = document.getElementById("sidoSelect").value;
             const sigunguSelect = document.getElementById("sigunguSelect");
             sigunguSelect.innerHTML = "";
 
-            const sigunguList = regionStructure[sido];
-            sigunguList.forEach(name => {
-                const opt = document.createElement("option");
-                opt.value = name;
-                opt.textContent = name;
-                sigunguSelect.appendChild(opt);
-            });
-
+            let options = "";
+            if (sido === "seoul") {
+                options += `<option value="gangnam">강남구</option><option value="jongno">종로구</option>`;
+            } else if (sido === "gyeonggi") {
+                options += `<option value="suwon">수원시</option>`;
+            } else if (sido === "busan") {
+                options += `<option value="haeundae">해운대구</option>`;
+            }
+            sigunguSelect.innerHTML = options;
             calculateWeatherAndCoaching();
         }
 
+        // 주차 토글 버튼 제어 함수
         function setWeek(week) {
             currentWeek = week;
             const btnThis = document.getElementById("btnThisWeek");
@@ -257,143 +293,98 @@
             calculateWeatherAndCoaching();
         }
 
-        function generateFakeForecast(seedName, week) {
-            const datesInfo = getDatesList(week);
-            const hash = seedName.charCodeAt(0) || 0;
-            
-            return datesInfo.map((d, i) => {
-                let temp = 22;
-                let status = "perfect";
-                let icon = "fa-cloud-sun";
-
-                if (hash % 3 === 0) { // 우천형 데이터셋 분기
-                    temp = (week === 'this') ? 22 + (i % 3) : 24 + (i % 2);
-                    status = (i === 3 || i === 4) ? "rain_heavy" : (i === 2 ? "shower" : "perfect");
-                    icon = (i === 3 || i === 4) ? "fa-umbrella" : (i === 2 ? "fa-cloud-showers-heavy" : "fa-sun");
-                } else if (hash % 3 === 1) { // 무더위형 데이터셋 분기
-                    temp = (week === 'this') ? 26 + (i % 4) : 29 + (i % 5);
-                    status = (week === 'next' && i >= 2 && i <= 4) ? "hot_core" : "hot_early";
-                    icon = (week === 'next' && i >= 2 && i <= 4) ? "fa-temperature-high" : "fa-sun";
-                } else { // 청명한 기후 분기
-                    temp = 21 + (i % 4);
-                    status = "perfect";
-                    icon = "fa-sun";
-                }
-
-                return {
-                    ...d,
-                    temp: temp,
-                    status: status,
-                    icon: icon
-                };
-            });
-        }
-
+        // 핵심 연동 및 알고리즘 판정 엔진
         function calculateWeatherAndCoaching() {
-            // 기준일 상단 가이드 바인딩
-            document.getElementById("todayBadge").innerText = `기준일: 2026년 5월 28일 (목)`;
-
             const sido = document.getElementById("sidoSelect").value;
-            const sigungu = document.getElementById("sigunguSelect").value || "전체";
+            const sigungu = document.getElementById("sigunguSelect").value;
             const sangkwon = document.getElementById("sangkwonSelect").value;
             const isWorldcup = document.getElementById("worldcupCheck").checked;
 
-            if(!sigungu) return;
+            // 주간 예보 데이터 가져오기
+            const forecast = weatherDatabase[sido][sigungu][currentWeek];
 
-            const forecast = generateFakeForecast(sigungu, currentWeek);
-
-            // 1. 상단 주간 날씨 UI 그리드 동적 렌더링
+            // 1. 좌측 화면에 요일별 날씨 카드 실시간 시각화
             const container = document.getElementById("weeklyWeatherContainer");
             container.innerHTML = "";
             
             forecast.forEach(item => {
                 let statusBadge = "";
-                if(item.status === "hot_core") statusBadge = "<span class='text-[10px] bg-red-100 text-red-600 px-1 py-0.5 rounded font-bold'>폭염</span>";
-                else if(item.status === "hot_early") statusBadge = "<span class='text-[10px] bg-orange-100 text-orange-600 px-1 py-0.5 rounded font-bold'>초여름</span>";
-                else if(item.status === "shower" || item.status === "rain_heavy") statusBadge = "<span class='text-[10px] bg-blue-100 text-blue-600 px-1 py-0.5 rounded font-bold'>비/소나기</span>";
-                else statusBadge = "<span class='text-[10px] bg-emerald-100 text-emerald-600 px-1 py-0.5 rounded font-bold'>맑음</span>";
-
-                // 공휴일 라벨 태그 조건부 생성
-                let holidayTag = item.holidayName ? `<div class="absolute top-1 right-1 text-[9px] bg-red-600 text-white font-extrabold px-1 rounded shadow-2xs animate-pulse">${item.holidayName}</div>` : "";
-                // 일요일/공휴일인 경우 컬러 강조 변수 처리
-                let dayColorClass = item.isRedDay ? "text-red-600 font-extrabold" : "text-slate-600 font-bold";
+                if(item.status === "hot_core") statusBadge = "<span class='text-[10px] bg-red-100 text-red-600 px-1 rounded font-bold'>폭염</span>";
+                else if(item.status === "hot_early") statusBadge = "<span class='text-[10px] bg-orange-100 text-orange-600 px-1 rounded font-bold'>초여름</span>";
+                else if(item.status === "shower" || item.status === "rain_heavy") statusBadge = "<span class='text-[10px] bg-blue-100 text-blue-600 px-1 rounded font-bold'>우천</span>";
+                else statusBadge = "<span class='text-[10px] bg-emerald-100 text-emerald-600 px-1 rounded font-bold'>쾌청</span>";
 
                 container.innerHTML += `
-                    <div class="relative flex flex-col items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200 text-center space-y-1.5 shadow-2xs min-h-[110px]">
-                        ${holidayTag}
-                        <div class="text-[11px] text-slate-400 font-medium">${item.dateString}</div>
-                        <div class="text-xs ${dayColorClass}">${item.dayLabel}요일</div>
-                        <i class="fa-solid ${item.icon} text-slate-400 text-sm"></i>
-                        <div class="font-bold text-xs text-slate-800">${item.temp}℃</div>
-                        <div>${statusBadge}</div>
+                    <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-200 text-xs">
+                        <span class="font-bold w-6">${item.day}</span>
+                        <i class="fa-solid ${item.icon} text-slate-500 text-sm"></i>
+                        <span class="font-semibold text-slate-700">${item.temp}℃</span>
+                        ${statusBadge}
                     </div>
                 `;
             });
 
-            // 2. 가이드라인 로직 연산
-            let countHotCore = 0, countHotEarly = 0, countRain = 0, countHoliday = 0;
+            // 2. 주간 대표 날씨 및 리스크 요인 종합 판정 알고리즘
+            let countHotCore = 0, countHotEarly = 0, countRain = 0;
             forecast.forEach(f => {
                 if(f.status === "hot_core") countHotCore++;
                 if(f.status === "hot_early") countHotEarly++;
                 if(f.status === "shower" || f.status === "rain_heavy") countRain++;
-                if(f.isRedDay) countHoliday++;
             });
 
+            // 메인 지배 날씨 도출
             let primaryWeather = "perfect";
             if (countHotCore >= 2) primaryWeather = "hot_core";
             else if (countRain >= 2) primaryWeather = "rain_heavy";
             else if (countHotEarly >= 3) primaryWeather = "hot_early";
 
-            // 3. 메인 스크립트 도출
-            let scriptText = `안녕하세요 점주님! 이번 [${sidoLabels[sido]} ${sigungu}] 권역 주간 매장 기상 분석 브리핑입니다.\n`;
-            
-            if(primaryWeather === "hot_core") scriptText += "해당 주간은 최고 33도 이상 올라가는 한여름 폭염 기후가 지속되어 야간 맥주/음료/얼음 매출이 급증할 예정입니다. ";
-            else if(primaryWeather === "rain_heavy") scriptText += "주간 내 집중호우 및 소나기성 우천 예보 일수가 많아 내점객 유동 동선에 일시적 저하가 발생할 우려가 있습니다. ";
-            else if(primaryWeather === "hot_early") scriptText += "평균 기온이 완연하게 상승하는 초여름 날씨로 계절성 하절기 상품군 매출 가속도가 높게 형성될 전망입니다. ";
-            else scriptText += "활동하기 좋은 맑고 완연한 날씨 분포가 예상되어 외부 활동 연관 카테고리가 강세를 보일 예정입니다. ";
+            // 3. 동적 텍스트 및 카테고리 솔루션 매칭
+            let scriptText = `안녕하세요 점주님! 이번 ${currentWeek === 'this' ? '금주' : '차주'} 해당 지역은 `;
+            if(primaryWeather === "hot_core") scriptText += "최고 33도 이상 올라가는 한여름 폭염 일수가 많아 야간 객수가 크게 살아날 전망입니다. ";
+            else if(primaryWeather === "rain_heavy") scriptText += "주간 내 비 소식이 빈번하게 예고되어 있어 내점객수가 감소할 우려가 있으나 목적구매 상품 위주로 방어가 필요합니다. ";
+            else if(primaryWeather === "hot_early") scriptText += "25도에서 30도를 웃도는 완연한 초여름 성수기 기온을 보여 아이스 카테고리 회전이 가속화될 예정입니다. ";
+            else scriptText += "나들이 가기 좋은 평온하고 화창한 봄/가을 기온이 예상됩니다. ";
 
-            if (countHoliday > 1) {
-                scriptText += "특히 이번 주간은 달력상 연휴/공휴일 일정(현충일 등)이 포함되어 있어, 상권 유형에 따른 유동인구 이동 폭이 매우 크게 요동치므로 사전 진열 정비가 필수적입니다.";
-            }
-
-            // 상권 특성 결합
+            // 상권 믹싱
             if(sangkwon === "apart" || sangkwon === "villa" || sangkwon === "single") {
-                scriptText += "\n\n주거밀착 상권 특성상 공휴일 및 연휴 저녁시간대 홈술족/가족단위 '집콕' 야식 수요가 가파르게 몰리므로, 주요 먹거리 가공식품 및 냉동간편식 완제품의 진열대를 꽉 채워 기회손실을 차단해주십시오.";
+                scriptText += "특히 주거밀착 상권 특성상 주말 및 야간 시간대 집콕 야식과 주류 수요 유입이 극대화되는 시점이니 매대 풀-진열이 무조건 수반되어야 합니다.";
             } else if(sangkwon === "work") {
-                scriptText += "\n\n공단/오피스 등 근무지 상권은 공휴일 당일 인근 유동이 일시에 소멸되는 공동화 현상이 우려되므로 유통기한이 짧은 FF제품군은 과감한 폐기 제어 필터링을 적용하시기 바랍니다.";
+                scriptText += "오피스/근무지 상권인 만큼 주말 공동화 현상을 대비해 주중 피크타임(오전/점심) 단기 회전 가이드에 전력해야 합니다.";
             } else {
-                scriptText += "\n\n관광지/유동 거점 상권 특성상 주말 및 공휴일에 외부 나들이객 인파가 한꺼번에 유입되므로 즉시 취식형 부자재와 워크인 쇼케이스 풀(Full) 충진 상태를 계속 모니터링해야 합니다.";
+                scriptText += "외부 유동인구가 집중되는 골든 구간이므로 즉시 취식성 상품 회전율 방어가 핵심입니다.";
             }
 
-            // 카테고리 텍스트 매핑
+            // 카테고리별 세부 제안서 생성
             let ff = "", counterFf = "", drink = "", general = "";
 
             if (primaryWeather === "hot_core" || primaryWeather === "hot_early") {
-                ff = "• 무더운 기후 특성을 고려, 국물 가공류 진열 비중을 낮추고 조리 없이 시원하게 먹는 조리 면류(냉면/비빔면)를 골든존 전면 배치.\n• 샌드위치, 햄버거, 삼각김밥 등 상온 한손 간편식 발주량 15% 상향 유지.";
-                counterFf = "• 카페25 아이스 아메리카노 테이크아웃 부자재(원두, 얼음컵, 빨대) 최소 3일치 이상 여유 안전 재고 창고 비치.\n• 조리 스낵류(치킨25) 주간 유동 대응 지속 조리 유도.";
-                drink = "• WIC 쇼케이스 내 제로 탄산음료, 이온, 대용량 페트 차음료 다단 진열 공간 대폭 확장.\n• 주말 야간 주류 소비 강세 대응 목적 수입/국산 맥주 멀티팩 번들 재고 상향.";
-                general = "• 유어스 컵얼음 전 규격(일반/빅/대용량) 평소 발주량 대비 1.5배 이상 매대 만재.\n• 하절기 가공식품 및 빙과류(튜브/바류) 회전 속도 가속화 대비 발주 중심 이동.";
+                ff = "• 날씨가 무더워짐에 따라 샌드위치, 주먹밥 카테고리 수요 증가. 발주량 평시 대비 15% 상향.\n• 조리빵류 비중을 소폭 낮추고 비빔/냉면류 간편식 전면 진열 유도.";
+                counterFf = "• 카페25 아이스 아메리카노 및 스무디 원재료(얼음컵, 빨대, 컵홀더) 결품 제로(0)화 발주 진행.\n• 치킨25 소형 스낵류 수시 조리 배치.";
+                drink = "• 제로 탄산음료, 이온음료, 대용량 페트 차음료 라인업 WIC 다단 진열 확대.\n• 수입/국산 캔맥주 멀티팩 번들 재고 상향 확보.";
+                general = "• 유어스 컵얼음 전 규격(일반/빅/대용량) 평소 대비 1.5배 이상 진열 전개.\n• 빙과류(튜브형) 발주 중심 이동 및 선크림/데오드란트 전면 가판 유치.";
             } else if (primaryWeather === "rain_heavy") {
-                ff = "• 우천 리스크에 의한 종합 객수 저하에 유연하게 대응.\n• FRESH FOOD(도시락, 주먹밥, 김밥 전체 카테고리) 발주량을 평소 대비 15~20% 타이트하게 축소 조율하여 선제적 폐기 관리.";
-                counterFf = "• 즉석조리 카운터FF(치킨25, 고피자)는 워머 내 과다 상시 조리를 제어하고, 주중 비대면 배달 및 주문 시 즉시 조리 방식으로 탄력적 전환.";
-                drink = "• [비 매칭 상품 전개] 우천 시 수요가 급격히 동반 상승하는 막걸리(전통주 전 브랜드) 및 홈타입 소주/안주 카테고리 발주 30% 보강 배치.";
-                general = "• [골든 가판대 운영] 비닐우산, 장우산 및 우비를 계산대 직근 가판대로 이동 배치.\n• 집콕 수요 연동형 가공밥, 봉지라면 멀티팩, 냉동 만두/피자류 안전 재고 확보.";
+                ff = "• 우천 리스크 감안하여 FRESH FOOD(도시락, 김밥, 샌드위치) 전체 라인업 발주 15~20% 과감히 축소하여 폐기 제어.";
+                counterFf = "• 치킨25, 고피자 즉석조리는 사전 조리 수량을 타이트하게 제어하고 주문 즉시 조리 방식으로 전환 안내.";
+                drink = "• [비오는날 특수] 막걸리(전통주) 전 브랜드 발주 30% 증가 및 소주 카테고리 상향 전개.";
+                general = "• [카운터 필수] 장우산, 일회용 비닐우산 즉시 계산대 옆 골든존 이동 진열.\n• 홈타입 가공밥(햇반 등), 번들 봉지라면 멀티팩 발주 보강.";
             } else {
-                ff = "• 야외 활동 수요에 최적화된 줄김밥, 간편 소풍용 도시락, 샌드위치 완제품 라인업 발주 20% 증량 조치.";
-                counterFf = "• 나들이 고객이 집중되는 피크 타임 전에 치킨25 대표 조리 품목 및 순살/꼬치류 워머 풀 진열 전개.\n• 카페25 원두 추출 셋팅 상태 사전 점검.";
-                drink = "• 나들이 이동족을 위한 소용량 생수(500ml), 소용량 페트 차음료 및 수입 와인/캔맥주 카테고리 회전율 확보.";
-                general = "• 매장 전면 나들이 가판대 구성 (물티슈, 미니 휴지, 돗자리 연관 진열).\n• 이동 중 간편히 섭취하는 껌, 젤리, 스낵류 카운터 사이드 매대 전진 배치.";
+                ff = "• 야외 활동에 적합한 줄김밥, 소풍용 도시락, 햄버거/샌드위치 완제품 카테고리 발주 20% 상향 조정.";
+                counterFf = "• 카페25 전 음료 원재료 균등 확보.\n• 나들이 나가는 유동 타임에 맞춰 치킨25 대표 치킨 및 꼬치류 상시 워머 만재 조치.";
+                drink = "• 나들이족 타겟 소용량 생수(500ml), 캔맥주, 수입 와인 회전율 체크 및 WIC 최하단 적재.";
+                general = "• 여행/이동용 물티슈, 휴대용 휴지, 돗자리 가판대 거치.\n• 껌, 젤리, 캔디류 카운터 앞 연관 진열 확대.";
             }
 
+            // 6월 월드컵 스페셜 엔진 강제 결합 분기
             if (isWorldcup) {
-                scriptText += "\n\n⚽ [월드컵 빅이벤트 알림] 야간 축구 경기 일정에 따른 배달 지연 우려로 인해 편의점 즉석조리 및 안주 수요가 최고조에 달할 예정이오니, 하단 기회손실 가이드를 필히 준수해 주십시오.";
-                ff += "\n⚽ [이벤트] 취식 및 보관이 간편한 냉장 족발, 편육, 닭발, 밀키트 등 안주류 발주 50% 과감히 증량!";
-                counterFf += "\n⚽ [이벤트] 치킨25(쏜살치킨 등) 원부재료 사전 200% 확보 확보 및 경기 시작 2시간 전 워머에 풀(Full)조리 전개 유도.";
-                drink += "\n⚽ [이벤트] 경기 전날 WIC 쇼케이스 최후방 깊숙한 곳까지 맥주 번들팩 수동 선적재 (미지근한 주류 대란 방지).";
-                general += "\n⚽ [이벤트] 야식 연관 육포, 마른오징어, 견과류 및 대형 봉지스낵 카운터 앞 돌출 가판 매대 추가 구성.";
+                scriptText += " 추가로 6월 월드컵 야간 경기 일정이 포함되어 있어 치킨집 배달 지연 대피 고객이 편의점으로 폭발적으로 유입될 대목입니다. 당일 기회손실이 절대 없도록 강력 매니지먼트 부탁드립니다.\"";
+                ff += "\n⚽ [월드컵 추가] 경기 보며 먹기 좋은 족발, 편육, 닭발 등 간편식 안주류 발주 50% 과감히 증량!";
+                counterFf += "\n⚽ [월드컵 추가] 치킨25(쏜살치킨 등) 원재료 발주 200% 상향 및 전날 사전 확보! 경기 시작 2시간 전 워머 풀(Full)조리 전개. 고피자 도우 재고 상향.";
+                drink += "\n⚽ [월드컵 추가] 국산/수입 캔맥주 대란 대비 경기 전날 WIC 쇼케이스 후방 최대로 밀어넣기 적재(미지근한 맥주 판매 시 기회손실 발생).";
+                general += "\n⚽ [월드컵 추가] 안주용 마른안주(육포, 오징어), 대형 봉지스낵류 계산대 매대 돌출 전개.";
+            } else {
+                scriptText += "\"";
             }
 
-            // 최종 매핑
             document.getElementById("coachingQuote").innerText = scriptText;
             document.getElementById("ffContent").innerText = ff;
             document.getElementById("counterFfContent").innerText = counterFf;
@@ -401,13 +392,15 @@
             document.getElementById("generalContent").innerText = general;
         }
 
+        // 스크립트 복사 기능
         function copyScript() {
             const text = document.getElementById("coachingQuote").innerText;
             navigator.clipboard.writeText(text).then(() => {
-                alert("발주 코칭 스크립트가 클립보드에 복사되었습니다.\n경영주 소통 채널에 즉시 활용하세요!");
+                alert("날씨 연동 코칭 스크립트가 복사되었습니다.\n경영주님과의 대화창이나 업무시스템에 붙여넣어 활용해 주세요.");
             });
         }
 
+        // 초기 화면 로드 시 세팅
         window.onload = function() {
             updateSigungu();
         };
