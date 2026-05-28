@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GS25 지역별 주간 날씨 및 발주 가이드</title>
-    <!-- Tailwind CSS 및 FontAwesome 아이콘 로드 -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -14,7 +13,6 @@
 </head>
 <body class="text-slate-800 antialiased pb-12">
 
-    <!-- 상단 헤더 -->
     <header class="bg-gradient-to-r from-blue-700 to-cyan-600 text-white shadow-md">
         <div class="max-w-6xl mx-auto px-4 py-5 flex justify-between items-center">
             <div class="flex items-center space-x-3">
@@ -24,20 +22,16 @@
         </div>
     </header>
 
-    <!-- 메인 컨테이너 -->
     <main class="max-w-6xl mx-auto px-4 mt-6 space-y-6">
         
-        <!-- 상단 영역: 조건 선택 및 주간 기상 정보 -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <!-- 환경 설정 카드 -->
             <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200 space-y-4 flex flex-col justify-between">
                 <div>
                     <div class="border-b border-slate-100 pb-2 mb-3">
                         <h2 class="font-bold text-slate-900 flex items-center"><i class="fa-solid fa-map-location-dot text-blue-600 mr-2"></i>지역 및 시점 선택</h2>
                     </div>
 
-                    <!-- 1. 지역 선택 -->
                     <div class="grid grid-cols-2 gap-2 mb-3">
                         <div>
                             <label class="block text-xs font-bold text-slate-500 mb-1">시/도</label>
@@ -53,11 +47,10 @@
                         <div>
                             <label class="block text-xs font-bold text-slate-500 mb-1">시/군/구</label>
                             <select id="sigunguSelect" onchange="calculateWeatherAndCoaching()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                            </select>
+                                </select>
                         </div>
                     </div>
 
-                    <!-- 2. 주차 선택 -->
                     <div class="mb-3">
                         <label class="block text-xs font-bold text-slate-500 mb-1">코칭 대상 주차</label>
                         <div class="grid grid-cols-2 gap-2">
@@ -66,7 +59,6 @@
                         </div>
                     </div>
 
-                    <!-- 3. 상권 분류 -->
                     <div class="mb-3">
                         <label class="block text-xs font-bold text-slate-500 mb-1">점포 상권 유형</label>
                         <select id="sangkwonSelect" onchange="calculateWeatherAndCoaching()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
@@ -81,7 +73,6 @@
                     </div>
                 </div>
 
-                <!-- 4. 특수 이벤트 체크 -->
                 <div class="flex items-center pt-2 border-t border-slate-100">
                     <input type="checkbox" id="worldcupCheck" onchange="calculateWeatherAndCoaching()" class="w-4 h-4 text-blue-600 bg-slate-100 border-slate-300 rounded focus:ring-blue-500">
                     <label for="worldcupCheck" class="ml-2 text-xs font-bold text-slate-700 select-none flex items-center">
@@ -91,7 +82,6 @@
                 </div>
             </div>
 
-            <!-- 주간 날씨 모니터링 판넬 -->
             <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200 lg:col-span-2">
                 <div class="border-b border-slate-100 pb-2 mb-4 flex justify-between items-center">
                     <h3 class="font-bold text-slate-900 text-sm flex items-center" id="weatherPanelTitle">
@@ -101,12 +91,12 @@
                     <span id="todayBadge" class="text-xs bg-slate-100 text-slate-600 font-medium px-2.5 py-1 rounded-md"></span>
                 </div>
                 <div id="weeklyWeatherContainer" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2.5">
-                </div>
+                    </div>
             </div>
         </section>
 
-        <!-- 하단 영역 -->
         <section class="space-y-6">
+            
             <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                     <h2 class="text-base font-bold text-slate-900 flex items-center">
@@ -126,21 +116,33 @@
                 <div class="border-b border-slate-100 pb-2">
                     <h3 class="font-bold text-slate-900 text-sm flex items-center"><i class="fa-solid fa-boxes-stacked text-indigo-600 mr-2"></i>카테고리별 종합 발주 가이드</h3>
                 </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                        <h4 class="font-bold text-xs sm:text-sm text-cyan-700 mb-2 flex items-center"><i class="fa-solid fa-box-tissue mr-1.5"></i> FRESH FOOD (FF)</h4>
+                        <h4 class="font-bold text-xs sm:text-sm text-cyan-700 mb-2 flex items-center">
+                            <i class="fa-solid fa-box-tissue mr-1.5"></i> FRESH FOOD (FF)
+                        </h4>
                         <p id="ffContent" class="text-xs text-slate-600 leading-relaxed whitespace-pre-line"></p>
                     </div>
+
                     <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                        <h4 class="font-bold text-xs sm:text-sm text-orange-700 mb-2 flex items-center"><i class="fa-solid fa-drumstick-bite mr-1.5"></i> 카운터 FF (즉석조리)</h4>
+                        <h4 class="font-bold text-xs sm:text-sm text-orange-700 mb-2 flex items-center">
+                            <i class="fa-solid fa-drumstick-bite mr-1.5"></i> 카운터 FF (즉석조리)
+                        </h4>
                         <p id="counterFfContent" class="text-xs text-slate-600 leading-relaxed whitespace-pre-line"></p>
                     </div>
+
                     <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                        <h4 class="font-bold text-xs sm:text-sm text-blue-700 mb-2 flex items-center"><i class="fa-solid fa-beer-mug-empty mr-1.5"></i> 주류 / 음료 카테고리</h4>
+                        <h4 class="font-bold text-xs sm:text-sm text-blue-700 mb-2 flex items-center">
+                            <i class="fa-solid fa-beer-mug-empty mr-1.5"></i> 주류 / 음료 카테고리
+                        </h4>
                         <p id="drinkContent" class="text-xs text-slate-600 leading-relaxed whitespace-pre-line"></p>
                     </div>
+
                     <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                        <h4 class="font-bold text-xs sm:text-sm text-purple-700 mb-2 flex items-center"><i class="fa-solid fa-snowflake mr-1.5"></i> 아이스 / 가공 / 비식품</h4>
+                        <h4 class="font-bold text-xs sm:text-sm text-purple-700 mb-2 flex items-center">
+                            <i class="fa-solid fa-snowflake mr-1.5"></i> 아이스 / 가공 / 비식품
+                        </h4>
                         <p id="generalContent" class="text-xs text-slate-600 leading-relaxed whitespace-pre-line"></p>
                     </div>
                 </div>
@@ -149,20 +151,215 @@
     </main>
 
     <script>
-        // 생략되었던 매핑 데이터 및 함수 로직 (이전 코드와 동일)
-        const regionStructure = { daejeon: ["동구", "중구", "서구", "유성구", "대덕구"], sejong: ["세종특별자치시"], chungnam: ["천안시 동남구", "천안시 서북구", "공주시", "보령시", "아산시", "서산시", "논산시", "계룡시", "당진시", "금산군", "부여군", "서천군", "청양군", "홍성군", "예산군", "태안군"], gwangju: ["동구", "서구", "남구", "북구", "광산구"], jeonbuk: ["전주시 완산구", "전주시 덕진구", "군산시", "익산시", "정읍시", "남원시", "김제시", "완주군", "진안군", "무주군", "장수군", "임실군", "순창군", "고창군", "부안군"], jeonnam: ["목포시", "여수시", "순천시", "나주시", "광양시", "담양군", "곡성군", "구례군", "고흥군", "보성군", "화순군", "장흥군", "강진군", "해남군", "영암군", "무안군", "함평군", "영광군", "장성군", "완도군", "진도군", "신안군"] };
-        const sidoLabels = { daejeon: "대전광역시", sejong: "세종특별자치시", chungnam: "충청남도", gwangju: "광주광역시", jeonbuk: "전북특별자치도", jeonnam: "전라남도" };
-        const nationalHolidays = { "01-01": "신정", "03-01": "삼일절", "05-05": "어린이날", "06-06": "현충일", "08-15": "광복절", "10-03": "개천절", "10-09": "한글날", "12-25": "크리스마스" };
-        let currentWeek = 'this';
+        const regionStructure = {
+            daejeon: ["동구", "중구", "서구", "유성구", "대덕구"],
+            sejong: ["세종특별자치시"],
+            chungnam: ["천안시 동남구", "천안시 서북구", "공주시", "보령시", "아산시", "서산시", "논산시", "계룡시", "당진시", "금산군", "부여군", "서천군", "청양군", "홍성군", "예산군", "태안군"],
+            gwangju: ["동구", "서구", "남구", "북구", "광산구"],
+            jeonbuk: ["전주시 완산구", "전주시 덕진구", "군산시", "익산시", "정읍시", "남원시", "김제시", "완주군", "진안군", "무주군", "장수군", "임실군", "순창군", "고창군", "부안군"],
+            jeonnam: ["목포시", "여수시", "순천시", "나주시", "광양시", "담양군", "곡성군", "구례군", "고흥군", "보성군", "화순군", "장흥군", "강진군", "해남군", "영암군", "무안군", "함평군", "영광군", "장성군", "완도군", "진도군", "신안군"]
+        };
 
-        function getDatesList(week) { const baseDate = new Date(); if (week === 'next') baseDate.setDate(baseDate.getDate() + 7); const daysShort = ["일", "월", "화", "수", "목", "금", "토"]; let result = []; for(let i=0; i<7; i++) { let tempDate = new Date(baseDate); tempDate.setDate(baseDate.getDate() + i); let month = String(tempDate.getMonth() + 1).padStart(2, '0'); let date = String(tempDate.getDate()).padStart(2, '0'); let mdKey = `${month}-${date}`; let holidayName = nationalHolidays[mdKey] || null; let isRedDay = (tempDate.getDay() === 0 || holidayName !== null); result.push({ dateString: `${tempDate.getMonth() + 1}/${tempDate.getDate()}`, dayLabel: daysShort[tempDate.getDay()], isRedDay: isRedDay, holidayName: holidayName }); } return result; }
-        function updateSigungu() { const sido = document.getElementById("sidoSelect").value; const sigunguSelect = document.getElementById("sigunguSelect"); sigunguSelect.innerHTML = ""; const sigunguList = regionStructure[sido]; sigunguList.forEach(name => { const opt = document.createElement("option"); opt.value = name; opt.textContent = name; sigunguSelect.appendChild(opt); }); calculateWeatherAndCoaching(); }
-        function setWeek(week) { currentWeek = week; const btnThis = document.getElementById("btnThisWeek"); const btnNext = document.getElementById("btnNextWeek"); if(week === 'this') { btnThis.className = "py-2 text-xs font-bold rounded-lg border bg-blue-600 text-white border-blue-600"; btnNext.className = "py-2 text-xs font-bold rounded-lg border bg-white text-slate-600 border-slate-300 hover:bg-slate-50"; } else { btnNext.className = "py-2 text-xs font-bold rounded-lg border bg-blue-600 text-white border-blue-600"; btnThis.className = "py-2 text-xs font-bold rounded-lg border bg-white text-slate-600 border-slate-300 hover:bg-slate-50"; } calculateWeatherAndCoaching(); }
-        function generateFakeForecast(seedName, week) { const datesInfo = getDatesList(week); const hash = seedName.charCodeAt(0) || 0; return datesInfo.map((d, i) => { let temp = 22; let status = "perfect"; let icon = "fa-cloud-sun"; if (hash % 3 === 0) { temp = (week === 'this') ? 21 + (i % 3) : 23 + (i % 2); status = (i === 3 || i === 4) ? "rain_heavy" : (i === 2 ? "shower" : "perfect"); icon = (i === 3 || i === 4) ? "fa-umbrella" : (i === 2 ? "fa-cloud-showers-heavy" : "fa-sun"); } else if (hash % 3 === 1) { temp = (week === 'this') ? 26 + (i % 4) : 30 + (i % 4); status = (week === 'next' && i >= 2 && i <= 4) ? "hot_core" : "hot_early"; icon = (week === 'next' && i >= 2 && i <= 4) ? "fa-temperature-high" : "fa-sun"; } else { temp = 22 + (i % 3); status = "perfect"; icon = "fa-sun"; } return { ...d, temp: temp, status: status, icon: icon }; }); }
-        
+        const sidoLabels = {
+            daejeon: "대전광역시", sejong: "세종특별자치시", chungnam: "충청남도",
+            gwangju: "광주광역시", jeonbuk: "전북특별자치도", jeonnam: "전라남도"
+        };
+
+        const nationalHolidays = {
+            "01-01": "신정", "03-01": "삼일절", "05-05": "어린이날", "06-06": "현충일", 
+            "08-15": "광복절", "10-03": "개천절", "10-09": "한글날", "12-25": "크리스마스"
+        };
+
+        let currentWeek = 'this'; 
+
+        function getDatesList(week) {
+            const baseDate = new Date(); 
+            if (week === 'next') {
+                baseDate.setDate(baseDate.getDate() + 7); 
+            }
+            
+            const daysShort = ["일", "월", "화", "수", "목", "금", "토"];
+            let result = [];
+
+            for(let i=0; i<7; i++) {
+                let tempDate = new Date(baseDate);
+                tempDate.setDate(baseDate.getDate() + i);
+
+                let month = String(tempDate.getMonth() + 1).padStart(2, '0');
+                let date = String(tempDate.getDate()).padStart(2, '0');
+                let mdKey = `${month}-${date}`;
+                
+                let holidayName = nationalHolidays[mdKey] || null;
+                let isRedDay = (tempDate.getDay() === 0 || holidayName !== null); 
+
+                result.push({
+                    dateString: `${tempDate.getMonth() + 1}/${tempDate.getDate()}`,
+                    dayLabel: daysShort[tempDate.getDay()],
+                    isRedDay: isRedDay,
+                    holidayName: holidayName
+                });
+            }
+            return result;
+        }
+
+        function updateSigungu() {
+            const sido = document.getElementById("sidoSelect").value;
+            const sigunguSelect = document.getElementById("sigunguSelect");
+            sigunguSelect.innerHTML = "";
+
+            const sigunguList = regionStructure[sido];
+            sigunguList.forEach(name => {
+                const opt = document.createElement("option");
+                opt.value = name;
+                opt.textContent = name;
+                sigunguSelect.appendChild(opt);
+            });
+
+            calculateWeatherAndCoaching();
+        }
+
+        function setWeek(week) {
+            currentWeek = week;
+            const btnThis = document.getElementById("btnThisWeek");
+            const btnNext = document.getElementById("btnNextWeek");
+
+            if(week === 'this') {
+                btnThis.className = "py-2 text-xs font-bold rounded-lg border bg-blue-600 text-white border-blue-600";
+                btnNext.className = "py-2 text-xs font-bold rounded-lg border bg-white text-slate-600 border-slate-300 hover:bg-slate-50";
+            } else {
+                btnNext.className = "py-2 text-xs font-bold rounded-lg border bg-blue-600 text-white border-blue-600";
+                btnThis.className = "py-2 text-xs font-bold rounded-lg border bg-white text-slate-600 border-slate-300 hover:bg-slate-50";
+            }
+            calculateWeatherAndCoaching();
+        }
+
+        function generateFakeForecast(seedName, week) {
+            const datesInfo = getDatesList(week);
+            const hash = seedName.charCodeAt(0) || 0;
+            
+            return datesInfo.map((d, i) => {
+                let temp = 22;
+                let status = "perfect";
+                let icon = "fa-cloud-sun";
+
+                if (hash % 3 === 0) {
+                    temp = (week === 'this') ? 21 + (i % 3) : 23 + (i % 2);
+                    status = (i === 3 || i === 4) ? "rain_heavy" : (i === 2 ? "shower" : "perfect");
+                    icon = (i === 3 || i === 4) ? "fa-umbrella" : (i === 2 ? "fa-cloud-showers-heavy" : "fa-sun");
+                } else if (hash % 3 === 1) {
+                    temp = (week === 'this') ? 26 + (i % 4) : 30 + (i % 4);
+                    status = (week === 'next' && i >= 2 && i <= 4) ? "hot_core" : "hot_early";
+                    icon = (week === 'next' && i >= 2 && i <= 4) ? "fa-temperature-high" : "fa-sun";
+                } else {
+                    temp = 22 + (i % 3);
+                    status = "perfect";
+                    icon = "fa-sun";
+                }
+
+                return { ...d, temp: temp, status: status, icon: icon };
+            });
+        }
+
         function getCategoryGuidelines(weather, sangkwon) {
             let guide = { ff: "", counterFf: "", drink: "", general: "" };
-            // (기존 안내 로직 생략 - 동일)
+
+            if (weather === "hot_core" || weather === "hot_early") {
+                switch(sangkwon) {
+                    case "apart":
+                    case "villa":
+                    case "single":
+                        guide.ff = "• 야간 열대야 유입 고객 증가: 저녁 전후 안주용 도시락 및 조리면 등 FF 카테고리 발주를 20% 정도 여유 있게 상향해 주세요.\n• 주거지 특성에 맞춰 소가구 취식용 조리 샌드위치군 다단 진열을 다각화해 두시면 좋습니다.";
+                        guide.counterFf = "• 치킨25 야간 홈술 안주 수요 집중: 저녁 18시 전후 치킨 조리 진열장 내 닭다리, 꼬치류를 부족하지 않게 준비해 주세요.\n• 카페25 야간 아이스 메뉴 수요를 고려하여 에스프레소 추출구 등 위생 관리를 미리 점검해 주시기 바랍니다.";
+                        guide.drink = "• 주거밀착형 대용량 홈술 가이드: 국산/수입 맥주 번들(4캔/6캔) 및 대용량 페트 탄산음료 발주를 30% 정도 늘려주세요.\n• WIC 쇼케이스 최하단에 증량 적재해 두시는 것을 추천합니다.";
+                        guide.general = "• 가족단위 야간 산책 고객 타겟: 일반/빅 컵얼음을 평소보다 1.5배 정도 넉넉하게 채워주세요.\n• 홈타입 통형 아이스크림 및 멀티바류 발주 보강이 효과적입니다.";
+                        break;
+                    case "work":
+                        guide.ff = "• 주중 출근 및 점심 피크타임 단기 회전: 오전 테이크아웃용 삼각김밥, 샌드위치 등 FF 발주를 20% 정도 강화해 주세요.\n• 주말 공동화에 대비하여 금요일 저녁 FF 발주량은 알맞게 조절하시는 것이 좋습니다.";
+                        guide.counterFf = "• 점심시간 직장인 테이크아웃 집중: 11시~13시 사이 카페25 아이스 아메리카노 원재료 및 부자재(컵, 빨대)를 가득 충진해 주세요.\n• 치킨25는 간식용 스낵 위주로 오전에 소량 조리 배치하는 것이 유리합니다.";
+                        guide.drink = "• 출근 시간대 숙취해소음료, 기능성 에너지드링크, 소용량 제로 탄산 중심 냉장 매대 집중 전개.\n• 주중 야간 직장인 회식 대피용 숙취해소제 카운터 연관 진열.";
+                        guide.general = "• 오피스 가판 중심: 직장인 매장 내 취식용 일반 컵얼음 다량 확보.\n• 사무실 비치용 소형 물티슈 및 구강청결제 카운터 옆 유치.";
+                        break;
+                    case "hotplace":
+                        guide.ff = "• 바쁜 이동 인구의 빠른 취식 타겟: 이동 중 취식이 편한 줄김밥, 햄버거, 조리 빵류 중심의 FF 발주를 25% 정도 증량해 주세요.\n• 무거운 도시락보다는 회전율이 높은 소형 FF 제품 위주로 결품이 없도록 다단 진열을 유지해 주시기 바랍니다.";
+                        guide.counterFf = "• 테이크아웃 폭발: 카페25 전 기기 가동률을 높이고, 아이스 원부재료를 매장 물류창고에 여유 있게 확보해 주세요.\n• 길 가던 고객의 눈길을 사로잡을 수 있도록 치킨 조리 진열장에 소형 조각치킨이나 꼬치류를 상시 노출해 구매를 유도해 주세요.";
+                        guide.drink = "• 이동 중 갈증 해소 목적: 소용량 생수(500ml), 이온음료, 바로 마실 수 있는 RTD 하이볼과 캔맥주 단품을 WIC 전면 골든존에 전진 배치해 주세요.\n• 묶음 상품보다는 단품 위주의 회전이 강한 시기입니다.";
+                        guide.general = "• 지나가는 길에 급구하는 수요 대응: 일반/빅 컵얼음 매대를 수시로 체크하여 가득 채워 주시기 바랍니다.\n• 가방에 쏙 들어가는 소형 물티슈, 일회용 티슈, 껌/캔디류를 가판대 및 계산대 주변에 집중 진열해 주세요.";
+                        break;
+                    case "travel":
+                        guide.ff = "• 야외 피크닉 및 돗자리족 겨냥: 펼쳐놓고 즐기기 좋은 프리미엄 도시락, 가족용 대용량 주먹밥 세트, 고급 샐러드 등 나들이용 FF 비중을 넓혀주세요.\n• 주말 오전 피크타임 전에 매대가 풍성해 보이도록 진열해 주시는 것이 좋습니다.";
+                        guide.counterFf = "• 단체 및 나들이 간식 수요: 치킨25의 '쏜살치킨 한 마리'나 대표 세트 상품을 오후 피크타임 전에 조리 진열장에 풍성하게 준비해 두시면 대량 구매 유도에 큰 도움이 됩니다.";
+                        guide.drink = "• 휴양지형 대용량 및 분위기 메이커 상품: 다인용 대용량 생수(2L)와 페트 음료, 그리고 피크닉 분위기를 내는 와인 및 수입 맥주 번들(4캔/6캔) 제품을 WIC 및 모음 매대에 대량 적재해 주세요.";
+                        guide.general = "• 야외 활동 특화 가판 팝업: 일회용 돗자리, 여행용 물티슈, 자외선 차단제(선크림), 일회용 접시 및 나무젓가락 등을 매장 입구 전면 가판대에 큼직하게 모음전 형태로 구성해 주시기 바랍니다.";
+                        break;
+                    default:
+                        guide.ff = "• 거점 시설 내부 통행객용 완제품 샌드위치 및 삼각김밥 안전 재고 위주 운영.";
+                        guide.counterFf = "• 매장 내 취식 고객 타겟 카페25 아이스 기본 부자재 결품 제로화 중심 관리.";
+                        guide.drink = "• 이동 경로 소비층 겨냥 500ml 생수 및 갈증 해소용 제로 탄산음료 쇼케이스 전면 유지.";
+                        guide.general = "• 시설 이동 목적에 맞춘 소용량 위생용품(마스크, 물티슈, 손소독제) 카운터 유치.";
+                }
+            } else if (weather === "rain_heavy") {
+                switch(sangkwon) {
+                    case "apart":
+                    case "villa":
+                    case "single":
+                        guide.ff = "• 내점객 저하 대비: 완제품 FF(도시락, 김밥, 주먹밥) 발주를 20% 정도 알맞게 조절하여 폐기 부담을 낮추는 것이 안전합니다.\n• 대신 집콕족용 홈타입 냉동 간편식 안주류를 잘 보이게 대체 배치해 주세요.";
+                        guide.counterFf = "• 치킨25는 현장 상시 조리량을 조금 줄이시고, 배달 어플(우리동네GS) 주문 알림 접수 시 즉시 조리하는 수동 운영 방식으로 유연하게 전환해 보시는 것을 추천합니다.";
+                        guide.drink = "• [주거지 비오는날 특수] 전통주(막걸리 전 브랜드) 발주를 40% 정도 넉넉히 상향 배치해 주시고, 연관 안주류를 가판에 연계 진열해 주시면 좋습니다.\n• 가정용 소주/맥주 팩 단위 보강.";
+                        guide.general = "• 우천 가판 즉시 가동: 계산대 우측 골든존에 장우산, 비닐우산, 일회용 우비를 눈에 띄게 전면 거치해 주세요.\n• 가공밥(햇반), 봉지라면 번들팩, 멀티 스낵 발주 보강.";
+                        break;
+                    case "work":
+                        guide.ff = "• 외부 출동 자제형 내점 폭발: 빌딩 내부 직장인 이동 차단으로 편의점 도시락/조리면 수요 폭증. FF 발주를 15% 정도 상향 조정하여 기회손실을 방지해 주세요.";
+                        guide.counterFf = "• 빌딩 내 직장인 테이크아웃용 카페25 아이스 커피 수요 수렴 대비 부자재 점검.\n• 치킨 조리 진열장 내 소형 스낵류 오전 소량 조리 배치.";
+                        guide.drink = "• 외부 이동이 불가능한 직장인 점심 대용식 두유, 컵커피, 소용량 대용 차음료 WIC 다단 진열 대폭 확장.";
+                        guide.general = "• 출근길 급구 수요: 오피스 출입구 바로 옆 우산 가판대 대용량 진열.\n• 양말, 수건, 일회용 티슈 등 긴급 비식품 카운터 배치.";
+                        break;
+                    case "hotplace":
+                        guide.ff = "• 유동인구 급감 대비: 거리를 걸어 다니는 순수 유동인구가 줄어들 수 있으므로, 도시락, 김밥 등 유통기한이 짧은 FF 카테고리는 발주를 30% 정도 알맞게 줄여서 폐기 손실을 방어하시는 것이 현명합니다.";
+                        guide.counterFf = "• 조리 수량 제어: 치킨 조리 진열장 내 상시 조리량을 평소보다 조금 낮추어 주시고, 내점 고객 유입 추이를 보며 조금씩 자주 조리해 주시기 바랍니다.";
+                        guide.drink = "• 주류/음료 회전율이 다소 완만해질 수 있으므로 WIC 추가 발주는 신중하게 조절해 주시고, 매장 내 기존 재고들의 선입선출 정리에 집중해 주세요.";
+                        guide.general = "• [유동상권 우산 특수 극대화] 길을 가다 갑자기 폭우를 만난 도보 이동객들이 우산을 사기 위해 매장으로 유입됩니다. 출입구 바로 앞 메인 가판대에 일회용 비닐우산과 저가형 장우산을 100개 이상 풍성하게 쌓아두시면 단시간에 높은 매출을 올릴 수 있습니다.";
+                        break;
+                    case "travel":
+                        guide.ff = "• 집객력 급감 조건: 유원지나 야외 관광지는 우천 시 객수가 크게 줄어듭니다. FF 전체 카테고리 발주를 필수 최소 수량 위주로 대폭 슬림화하여 운영해 주세요.";
+                        guide.counterFf = "• 나들이 치킨 수요가 소멸되므로 치킨 조리 진열장의 대량 조리는 잠시 미뤄두시고, 매장을 방문하는 소수 고객 타겟으로 따뜻한 카페25 원두커피 원재료 관리에 주력해 주세요.";
+                        guide.drink = "• 야외용 대용량 주류/음료 회전이 일시적으로 정체될 수 있습니다. 무리하게 WIC를 채우기보다는 상온 창고 재고 소진을 우선 유도해 주세요.";
+                        guide.general = "• 여행지 특성상 일정을 취소하고 귀가하는 인구가 많아 우산 판매 폭발력이 유동 상권에 비해 낮을 수 있습니다. 무리한 과다 발주보다는 기본 재고 위주로 입구 가판을 정돈해 주세요.";
+                        break;
+                    default:
+                        guide.ff = "• 터미널, 역사 등 대피/체류 인구용 간편 컵라면 연관 삼각김밥 기본 수량 위주 방어.";
+                        guide.counterFf = "• 카운터 FF 즉석 가동 최소화 및 사전 제작 수량 조절.";
+                        guide.drink = "• 전통주/막걸리 수요 없음: 주거지와 달리 막걸리 증량은 피해주시고, 상온 보관 음료 중심 백업.";
+                        guide.general = "• 이동 통행객용 긴급 우산 매대 및 일회용 휴지 카운터 전면 배치.";
+                }
+            } else {
+                switch(sangkwon) {
+                    case "hotplace":
+                        guide.ff = "• 통행 인구 활성화 골든데이: 이동 중 한 손에 들고 가볍게 먹기 좋은 삼각김밥, 줄김밥, 샌드위치 등 완제품 FF 발주를 오후 시간대까지 넉넉하게 유지해 주세요.";
+                        guide.counterFf = "• 테이크아웃 피크: 카페25 아이스컵 및 원두 부자재를 냉동고 가득 채워주시고, 치킨 조리 진열장에는 한입에 먹기 편한 닭꼬치나 소시지류를 상시 준비해 주세요.";
+                        guide.drink = "• 걸어가며 수시로 마시는 500ml 소용량 생수, 제로 탄산음료, RTD 컵커피 위주로 WIC 쇼케이스 상단 골든존을 빈틈없이 채워 주시기 바랍니다.";
+                        guide.general = "• 가판대 및 계산대 앞 필수 운영: 이동 중 입가심을 할 수 있는 껌, 캔디, 젤리류 제품을 풍성하게 진열해 두시면 동선 연계 구매가 활발해집니다.";
+                        break;
+                    case "travel":
+                        guide.ff = "• 야외 피크닉 골든데이: 나들이용 줄김밥, 소풍용 도시락, 프리미엄 샌드위치/버거 완제품 FF 발주를 30% 이상 과감히 증량 전개해 매대를 풍성하게 키워주세요.";
+                        guide.counterFf = "• 야외 유원지 간식 피크타임(10시~15시): 가족/연인 단위 고객 타겟 치킨25 '쏜살치킨 한 마리'나 대표 팩 상품들을 치킨 조리 진열장에 가득 채워 시각적 효과를 극대화해 주세요.";
+                        guide.drink = "• 피크닉용 수입 캔맥주 번들, RTD 하이볼, 미니 와인 및 얼음 파우치 음료 제품들을 WIC 및 매장 메인 진열대에 대량 적재해 운영해 주세요.";
+                        guide.general = "• 야외 활동 특화 팝업 가판 필수 운영: 일회용 돗자리, 대용량 물티슈, 일회용 접시/나무젓가락, 선크림 등을 전면 거치하여 동선 연관 구매를 적극 유도해 주세요.";
+                        break;
+                    case "apart":
+                    case "villa":
+                    case "single":
+                        guide.ff = "• 평시 주말 패턴 유지: 주거지 주말 브런치용 샌드위치 및 기본 삼각김밥 발주를 10% 정도 보강하여 안정적으로 운영해 주세요.";
+                        guide.counterFf = "• 주말 가족 단위 오후 간식 타임 매칭용 조각 치킨류를 시간대에 맞춰 조리 진열장에 풍성하게 준비해 주시면 좋습니다.";
+                        guide.drink = "• 일상 홈술 소비 패턴: 국산 500ml 캔맥주 및 소주 카테고리 균등 진열 상태 유지 및 WIC 재고 로테이션.";
+                        guide.general = "• 일상 가공식품 및 기본 스낵류 가판 정비: 매장 내 행사 상품(1+1, 2+1) 안내 카드가 잘 보이도록 가격표를 정돈해 주세요.";
+                        break;
+                    default:
+                        guide.ff = "• 주중 루틴 발주 스케줄 준수, 주말 최저 발주 필터 적용.";
+                        guide.counterFf = "• 주중 출근길/점심시간 타겟 카페25 원두 부자재 정상 충진 원칙.";
+                        guide.drink = "• 사무실용 번들 음료 및 대용량 차음료 WIC 정위치 진열.";
+                        guide.general = "• 일상 소모성 위생용품 및 가공식품 표준 진열대 재고 유지.";
+                }
+            }
             return guide;
         }
 
@@ -170,28 +367,103 @@
             const now = new Date();
             const days = ["일", "월", "화", "수", "목", "금", "토"];
             document.getElementById("todayBadge").innerText = `기준일: ${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일 (${days[now.getDay()]})`;
+
             const sido = document.getElementById("sidoSelect").value;
             const sigungu = document.getElementById("sigunguSelect").value || "전체";
             const sangkwon = document.getElementById("sangkwonSelect").value;
             const isWorldcup = document.getElementById("worldcupCheck").checked;
+
             if(!sigungu) return;
+
             const forecast = generateFakeForecast(sigungu, currentWeek);
+
             const container = document.getElementById("weeklyWeatherContainer");
             container.innerHTML = "";
+            
             forecast.forEach(item => {
-                let statusBadge = item.status === "hot_core" ? "<span class='text-[10px] bg-red-100 text-red-600 px-1 py-0.5 rounded font-bold'>폭염</span>" : item.status === "hot_early" ? "<span class='text-[10px] bg-orange-100 text-orange-600 px-1 py-0.5 rounded font-bold'>초여름</span>" : (item.status === "shower" || item.status === "rain_heavy") ? "<span class='text-[10px] bg-blue-100 text-blue-600 px-1 py-0.5 rounded font-bold'>비/소나기</span>" : "<span class='text-[10px] bg-emerald-100 text-emerald-600 px-1 py-0.5 rounded font-bold'>맑음</span>";
+                let statusBadge = "";
+                if(item.status === "hot_core") statusBadge = "<span class='text-[10px] bg-red-100 text-red-600 px-1 py-0.5 rounded font-bold'>폭염</span>";
+                else if(item.status === "hot_early") statusBadge = "<span class='text-[10px] bg-orange-100 text-orange-600 px-1 py-0.5 rounded font-bold'>초여름</span>";
+                else if(item.status === "shower" || item.status === "rain_heavy") statusBadge = "<span class='text-[10px] bg-blue-100 text-blue-600 px-1 py-0.5 rounded font-bold'>비/소나기</span>";
+                else statusBadge = "<span class='text-[10px] bg-emerald-100 text-emerald-600 px-1 py-0.5 rounded font-bold'>맑음</span>";
+
                 let holidayTag = item.holidayName ? `<div class="absolute top-1 right-1 text-[9px] bg-red-600 text-white font-extrabold px-1 rounded shadow-2xs animate-pulse">${item.holidayName}</div>` : "";
-                container.innerHTML += `<div class="relative flex flex-col items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200 text-center space-y-1.5 shadow-2xs min-h-[110px]">${holidayTag}<div class="text-[11px] text-slate-400 font-medium">${item.dateString}</div><div class="text-xs ${item.isRedDay ? 'text-red-600 font-extrabold' : 'text-slate-600 font-bold'}">${item.dayLabel}요일</div><i class="fa-solid ${item.icon} text-slate-400 text-sm"></i><div class="font-bold text-xs text-slate-800">${item.temp}℃</div><div>${statusBadge}</div></div>`;
+                let dayColorClass = item.isRedDay ? "text-red-600 font-extrabold" : "text-slate-600 font-bold";
+
+                container.innerHTML += `
+                    <div class="relative flex flex-col items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200 text-center space-y-1.5 shadow-2xs min-h-[110px]">
+                        ${holidayTag}
+                        <div class="text-[11px] text-slate-400 font-medium">${item.dateString}</div>
+                        <div class="text-xs ${dayColorClass}">${item.dayLabel}요일</div>
+                        <i class="fa-solid ${item.icon} text-slate-400 text-sm"></i>
+                        <div class="font-bold text-xs text-slate-800">${item.temp}℃</div>
+                        <div>${statusBadge}</div>
+                    </div>
+                `;
             });
-            // (스크립트 및 기타 로직 생략 - 동일)
+
+            let countHotCore = 0, countHotEarly = 0, countRain = 0, countHoliday = 0;
+            forecast.forEach(f => {
+                if(f.status === "hot_core") countHotCore++;
+                if(f.status === "hot_early") countHotEarly++;
+                if(f.status === "shower" || f.status === "rain_heavy") countRain++;
+                if(f.isRedDay) countHoliday++;
+            });
+
+            let primaryWeather = "perfect";
+            if (countHotCore >= 2) primaryWeather = "hot_core";
+            else if (countRain >= 2) primaryWeather = "rain_heavy";
+            else if (countHotEarly >= 3) primaryWeather = "hot_early";
+
+            const finalGuide = getCategoryGuidelines(primaryWeather, sangkwon);
+
+            let scriptText = `안녕하세요 경영주님! 이번 주 [${sidoLabels[sido]} ${sigungu}] 지역의 주간 매장 기상 안내 정보입니다.\n`;
+            if(primaryWeather === "hot_core") scriptText += "낮 최고 기온이 33도 이상 올라가는 한여름 폭염 날씨가 이어질 것으로 보여서, 야간 시간대에 시원한 맥주나 음료, 얼음컵을 찾는 발길이 크게 늘어날 것 같습니다. ";
+            else if(primaryWeather === "rain_heavy") scriptText += "이번 주에는 집중호우나 소나기 소식이 자주 있어서 매장을 찾아오시는 고객님들의 동선과 가판대 우산 매대를 미리 부드럽게 점검해 두시는 것이 좋겠습니다. ";
+            else if(primaryWeather === "hot_early") scriptText += "평균 기온이 부쩍 올라가는 초여름 날씨가 예상되어서, 본격적인 여름철 시즌 상품들의 매출이 기분 좋게 상승할 것으로 전망됩니다. ";
+            else scriptText += "활동하기 아주 좋은 맑고 쾌적한 날씨가 이어질 것으로 보여서 전반적인 매장 상품들의 판매 활성화가 기대되는 한 주입니다. ";
+
+            if (countHoliday > 1) {
+                scriptText += " 특히 이번 주간은 달력에 빨간 날(공휴일 연휴)이 섞여 있어서, 현재 우리 매장 상권에 맞는 고객님들의 이동 동선을 미리 파악해 두시는 것이 매출을 올리는 중요한 열쇠가 될 것입니다.";
+            }
+
+            if(sangkwon === "apart" || sangkwon === "villa" || sangkwon === "single") {
+                scriptText += "\n\n우리 매장은 주거밀착형 상권에 해당하므로 비가 오는 날 집에서 즐기시는 '홈술 막걸리 특수'나 더운 날 야간에 찾으시는 '집콕 안주' 카테고리를 중심으로 발주 가이드를 세팅해 드렸으니, 제품이 모자라지 않게 챙겨보시면 좋겠습니다.";
+            } else if(sangkwon === "work") {
+                scriptText += "\n\n우리 매장은 오피스/근무지 상권에 해당하므로 주말 공휴일의 공백을 채우기 위해, 평일 직장인분들의 출근 및 점심 피크타임에 맞춘 단기 집중 가이드와 우천 시 건물 내부 이동 고객을 잡는 안내를 준비했습니다.";
+            } else if(sangkwon === "hotplace") {
+                scriptText += "\n\n우리 매장은 번화가나 역세권 같은 유동강세 상권에 해당하므로, 길을 지나가며 가볍고 빠르게 사 갈 수 있는 1인용 FF 상품이나 소용량 음료, 우천 시 즉각적인 가판대 우산 배치 전략을 중심축으로 제안해 드립니다.";
+            } else if(sangkwon === "travel") {
+                scriptText += "\n\n우리 매장은 여행지나 유원지 상권에 해당하므로, 맑은 날 야외 활동을 즐기러 온 피크닉족을 위한 프리미엄 다인용 간편식, 와인/주류 번들, 그리고 나들이용 가판 편의용품 모음 진열 전략을 연동해 두었습니다.";
+            } else {
+                scriptText += "\n\n매장만의 특수한 유동 패턴에 맞추어 이동 중에 드시기 편한 완제품 위주의 가이드라인을 하단 카테고리에 알맞게 맞춤형으로 연동해 두었습니다.";
+            }
+
+            if (isWorldcup) {
+                scriptText += "\n\n⚽ [월드컵 빅이벤트 안내] 야간에 축구 경기 일정이 예정되어 있습니다! 배달 대란으로 인해 가까운 편의점에서 즉석조리 식품이나 야식을 직접 구매하려는 수요가 최고조에 달할 수 있으니 아래 기회손실 방지 안내를 꼭 확인해 주세요.";
+                finalGuide.ff += "\n⚽ [월드컵 가이드] 축구 경기를 보며 야간에 즐길 수 있는 냉장 족발, 편육, 불닭발, 밀키트 안주 종류 등 FF 발주를 평소보다 50% 정도 넉넉하게 채워주세요!";
+                finalGuide.counterFf += "\n⚽ [월드컵 가이드] 치킨25 원부재료를 평소보다 2배 이상 미리 확보해 두시고, 경기 시작 2시간 전에는 치킨 조리 진열장에 대표 세트 상품들이 풍성하게 보이도록 미리 조리해 두시는 것을 추천합니다.";
+                finalGuide.drink += "\n⚽ [월드컵 가이드] 경기 전날 WIC 쇼케이스 가장 깊숙한 안쪽 공간까지 맥주 번들 상품들을 미리 가득 채워 넣어주세요. (고객님들이 미지근한 맥주를 가져가시는 일을 줄일 수 있습니다).";
+                finalGuide.general += "\n⚽ [월드컵 가이드] 안주와 함께 구매하기 좋은 마른안주(육포, 오징어) 및 대형 봉지 과자류를 카운터 앞 돌출 매대에 추가로 보기 좋게 모아 진열해 주세요.";
+            }
+
+            document.getElementById("coachingQuote").innerText = scriptText;
+            document.getElementById("ffContent").innerText = finalGuide.ff;
+            document.getElementById("counterFfContent").innerText = finalGuide.counterFf;
+            document.getElementById("drinkContent").innerText = finalGuide.drink;
+            document.getElementById("generalContent").innerText = finalGuide.general;
+        }
+
+        function copyScript() {
+            const text = document.getElementById("coachingQuote").innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("발주 코칭 스크립트가 클립보드에 복사되었습니다.\n경영주님 소통 채널에 즉시 편하게 활용하세요!");
+            });
         }
 
         window.onload = function() {
-            // 강제로 체크 해제 및 초기화
-            document.getElementById("worldcupCheck").checked = false;
             updateSigungu();
         };
-        function copyScript() { alert("복사되었습니다."); }
     </script>
 </body>
 </html>
