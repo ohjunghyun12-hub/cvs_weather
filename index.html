@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>편의점 영업지원 날씨 대시보드</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-bg: #f8f9fa;
+            --border-color: #dee2e6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f1f3f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 { margin: 0; font-size: 24px; }
+        header p { margin: 5px 0 0 0; opacity: 0.8; font-size: 14px; }
+
+        /* 필터 영역 */
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label { font-weight: bold; font-size: 13px; color: #666; }
+        select {
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            min-width: 150px;
+        }
+
+        /* 주간 선택 버튼 */
+        .week-toggle {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .btn-toggle {
+            padding: 10px 20px;
+            border: 1px solid var(--secondary-color);
+            background: white;
+            color: var(--secondary-color);
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-toggle.active {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        /* 날씨 카드 그리드 */
+        .weather-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .weather-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-top: 5px solid #ccc;
+        }
+
+        .weather-card.sunday { border-top-color: #e74c3c; }
+        .weather-card.saturday { border-top-color: #3498db; }
+        .weather-card.holiday { border-top-color: #e74c3c; background-color: #fff5f5; }
+
+        .card-date { font-size: 14px; font-weight: bold; color: #555; }
+        .card-day { font-size: 12px; color: #888; margin-bottom: 10px; }
+        .holiday-name { color: var(--accent-color); font-size: 11px; font-weight: bold; display: block; margin-top: -5px; margin-bottom: 5px;}
+        .weather-icon { font-size: 32px; margin: 10px 0; }
+        .temp-high { color: #e74c3c; font-weight: bold; font-size: 16px; }
+        .temp-low { color: #3498db; font-weight: bold; font-size: 16px; }
+        .temp-divider { color: #ccc; margin: 0 4px; }
+
+        /* 발주 코칭 섹션 */
+        .coaching-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .coaching-section h2 { margin-top: 0; font-size: 18px; color: var(--primary-color); }
+        
+        /* 멘트 공간 홀더 */
+        .coaching-placeholder {
+            background: var(--light-bg);
+            border: 1px dashed #b2bec3;
+            padding: 20px;
+            border-radius: 6px;
+            color: #636e72;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>편의점 영업지원 날씨 대시보드</h1>
+        <p>담당 지역(대전/세종/충남/광주/전남/전북) 맞춤형 주간 날씨 및 발주 가이드</p>
+    </header>
+
+    <div class="filter-section">
+        <div class="filter-group">
+            <label for="region-select">시/도</label>
+            <select id="region-select" onchange="updateSubRegions()">
+                <option value="대전">대전광역시</option>
+                <option value="세종">세종특별자치시</option>
+                <option value="충남">충청남도</option>
+                <option value="광주">광주광역시</option>
+                <option value="전북">전라북도</option>
+                <option value="전남">전라남도</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="subregion-select">시/군/구</label>
+            <select id="subregion-select" onchange="getWeatherData()">
+                </select>
+        </div>
+
+        <div class="week-toggle">
+            <button class="btn-toggle active" id="btn-this-week" onclick="changeWeek('this')">금주 (7일)</button>
+            <button class="btn-toggle" id="btn-next-week" onclick="changeWeek('next')">차주 (7일)</button>
+        </div>
+    </div>
+
+    <div class="weather-grid" id="weather-grid-container">
+        </div>
+
+    <div class="coaching-section">
+        <h2>💡 지역 맞춤형 발주 코칭 가이드</h2>
+        <div id="coaching-container">
+            <div class="coaching-placeholder">
+                [알림] 현재 날씨 및 공휴일 연동 데이터 분석 중... <br>
+                (추후 이곳에 날씨/연휴 조건별 자동 발주 추천 코칭 멘트 로직이 삽입될 예정입니다.)
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. 담당 지역 데이터 (위경도 포함)
+    const regionData = {
+        "대전": { "전체": { lat: 36.3504, lon: 127.3845 } },
+        "세종": { "전체": { lat: 36.4800, lon: 127.2890 } },
+        "충남": {
+            "천안시": { lat: 36.8151, lon: 127.1139 },
+            "아산시": { lat: 36.7836, lon: 127.0039 },
+            "서산시": { lat: 36.7845, lon: 126.4506 },
+            "당진시": { lat: 36.8927, lon: 126.6283 },
+            "공주시": { lat: 36.4465, lon: 127.1190 }
+        },
+        "광주": { "전체": { lat: 35.1595, lon: 126.8526 } },
+        "전북": {
+            "전주시": { lat: 35.8242, lon: 127.1480 },
+            "익산시": { lat: 35.9483, lon: 126.9576 },
+            "군산시": { lat: 35.9677, lon: 126.7366 },
+            "완주군": { lat: 35.9048, lon: 127.1622 }
+        },
+        "전남": {
+            "여수시": { lat: 34.7604, lon: 127.6622 },
+            "순천시": { lat: 34.9506, lon: 127.4872 },
+            "목포시": { lat: 34.8118, lon: 126.3922 },
+            "광양시": { lat: 34.9405, lon: 127.6959 }
+        }
+    };
+
+    // 2. 대한민국 법정 공휴일 (고정/대략적 계산 매핑 - 실제 상용시 API 권장)
+    const holidays = {
+        "01-01": "신정", "03-01": "삼일절", "05-05": "어린이날", 
+        "06-06": "현충일", "08-15": "광복절", "10-03": "개천절", 
+        "10-09": "한글날", "12-25": "성탄절"
+        // 음력 공휴일(설날/추석/석탄일)은 수동 추가 또는 외부 API 연동이 필요합니다.
+    };
+
+    let currentWeek = 'this'; // 'this' 또는 'next'
+
+    // 시군구 셀렉트 박스 업데이트
+    function updateSubRegions() {
+        const regionSelect = document.getElementById("region-select");
+        const subregionSelect = document.getElementById("subregion-select");
+        const selectedRegion = regionSelect.value;
+
+        subregionSelect.innerHTML = "";
+        
+        for (let sub in regionData[selectedRegion]) {
+            let option = document.createElement("option");
+            option.value = sub;
+            option.textContent = sub;
+            subregionSelect.appendChild(option);
+        }
+        getWeatherData();
+    }
+
+    // 주간 변경 버튼 이벤트
+    function changeWeek(week) {
+        currentWeek = week;
+        document.getElementById("btn-this-week").classList.toggle("active", week === 'this');
+        document.getElementById("btn-next-week").classList.toggle("active", week === 'next');
+        getWeatherData();
+    }
+
+    // 날씨 코드에 따른 이모지 반환
+    function getWeatherIcon(code) {
+        if (code === 0) return "☀️";
+        if (code <= 3) return "⛅";
+        if (code <= 48) return "🌫️";
+        if (code <= 67) return "🌧️";
+        if (code <= 77) return "❄️";
+        if (code <= 82) return "🌦️";
+        return "⛈️";
+    }
+
+    // 날씨 데이터 가져오기 (Open-Meteo API)
+    function getWeatherData() {
+        const region = document.getElementById("region-select").value;
+        const subregion = document.getElementById("subregion-select").value;
+        const coords = regionData[region][subregion];
+
+        // 14일치 데이터를 받아와서 7일씩 쪼개어 사용
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul`;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                renderWeather(data.daily);
+            })
+            .catch(err => console.error("날씨 데이터를 불러오는데 실패했습니다.", err));
+    }
+
+    // 화면에 날씨 카드 렌더링
+    function renderWeather(dailyData) {
+        const container = document.getElementById("weather-grid-container");
+        container.innerHTML = "";
+
+        // 금주(0~6일째), 차주(7~13일째) 인덱스 정의
+        const startIndex = currentWeek === 'this' ? 0 : 7;
+        const endIndex = startIndex + 7;
+
+        const dayLabels = ["일", "월", "화", "수", "목", "금", "토"];
+
+        for (let i = startIndex; i < endIndex; i++) {
+            const dateStr = dailyData.time[i]; // YYYY-MM-DD
+            const maxTemp = Math.round(dailyData.temperature_2m_max[i]);
+            const minTemp = Math.round(dailyData.temperature_2m_min[i]);
+            const weatherCode = dailyData.weathercode[i];
+
+            const dateObj = new Date(dateStr);
+            const monthDay = `${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
+            const dayOfWeek = dayLabels[dateObj.getDay()];
+            
+            // 공휴일 및 요일 체크
+            const mmdd = dateStr.substring(5, 10); // MM-DD
+            const isHoliday = holidays[mmdd] || false;
+            
+            let cardClass = "weather-card";
+            if (dateObj.getDay() === 0) cardClass += " sunday";
+            if (dateObj.getDay() === 6) cardClass += " saturday";
+            if (isHoliday) cardClass += " holiday";
+
+            const cardHtml = `
+                <div class="${cardClass}">
+                    <div class="card-date">${monthDay}</div>
+                    <div class="card-day">(${dayOfWeek})</div>
+                    ${isHoliday ? `<span class="holiday-name">${holidays[mmdd]}</span>` : ''}
+                    <div class="weather-icon">${getWeatherIcon(weatherCode)}</div>
+                    <div class="card-temp">
+                        <span class="temp-high">${maxTemp}°</span>
+                        <span class="temp-divider">/</span>
+                        <span class="temp-low">${minTemp}°</span>
+                    </div>
+                </div>
+            `;
+            container.innerHTML += cardHtml;
+        }
+    }
+
+    // 초기 실행
+    window.onload = function() {
+        updateSubRegions();
+    };
+</script>
+</body>
+</html>
