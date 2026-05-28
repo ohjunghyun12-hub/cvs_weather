@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>편의점 영업지원 날씨 대시보드</title>
+    <title>GS25 지역별 주간 날씨 및 발주 가이드</title>
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
+            --primary-color: #007bc3; /* GS25 메인 브랜드 컬러 느낌의 블루 */
+            --dark-bg: #2c3e50;
             --accent-color: #e74c3c;
             --light-bg: #f8f9fa;
             --border-color: #dee2e6;
@@ -29,14 +29,14 @@
         header {
             background-color: var(--primary-color);
             color: white;
-            padding: 20px;
+            padding: 25px 20px;
             border-radius: 10px;
             margin-bottom: 20px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        header h1 { margin: 0; font-size: 24px; }
-        header p { margin: 5px 0 0 0; opacity: 0.8; font-size: 14px; }
+        header h1 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+        header p { margin: 8px 0 0 0; opacity: 0.9; font-size: 15px; font-weight: 500; }
 
         /* 필터 영역 */
         .filter-section {
@@ -63,7 +63,8 @@
             border: 1px solid var(--border-color);
             border-radius: 6px;
             font-size: 14px;
-            min-width: 150px;
+            min-width: 180px;
+            background-color: #fff;
         }
 
         /* 주간 선택 버튼 */
@@ -71,35 +72,42 @@
             display: flex;
             gap: 10px;
             margin-top: auto;
+            margin-left: auto;
+        }
+
+        @media (max-width: 768px) {
+            .week-toggle { margin-left: 0; width: 100%; }
+            .btn-toggle { flex: 1; }
         }
 
         .btn-toggle {
-            padding: 10px 20px;
-            border: 1px solid var(--secondary-color);
+            padding: 10px 25px;
+            border: 1px solid var(--primary-color);
             background: white;
-            color: var(--secondary-color);
+            color: var(--primary-color);
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: 14px;
         }
 
         .btn-toggle.active {
-            background: var(--secondary-color);
+            background: var(--primary-color);
             color: white;
         }
 
         /* 날씨 카드 그리드 */
         .weather-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
             margin-bottom: 20px;
         }
 
         .weather-card {
             background: white;
-            padding: 15px;
+            padding: 15px 10px;
             border-radius: 10px;
             text-align: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -110,10 +118,10 @@
         .weather-card.saturday { border-top-color: #3498db; }
         .weather-card.holiday { border-top-color: #e74c3c; background-color: #fff5f5; }
 
-        .card-date { font-size: 14px; font-weight: bold; color: #555; }
-        .card-day { font-size: 12px; color: #888; margin-bottom: 10px; }
-        .holiday-name { color: var(--accent-color); font-size: 11px; font-weight: bold; display: block; margin-top: -5px; margin-bottom: 5px;}
-        .weather-icon { font-size: 32px; margin: 10px 0; }
+        .card-date { font-size: 15px; font-weight: bold; color: #333; }
+        .card-day { font-size: 13px; color: #777; margin-bottom: 8px; }
+        .holiday-name { color: var(--accent-color); font-size: 11px; font-weight: bold; display: block; margin-top: -4px; margin-bottom: 6px;}
+        .weather-icon { font-size: 36px; margin: 8px 0; }
         .temp-high { color: #e74c3c; font-weight: bold; font-size: 16px; }
         .temp-low { color: #3498db; font-weight: bold; font-size: 16px; }
         .temp-divider { color: #ccc; margin: 0 4px; }
@@ -124,12 +132,11 @@
             padding: 25px;
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border-left: 5px solid var(--primary-color);
+            border-left: 5px solid var(--dark-bg);
         }
 
-        .coaching-section h2 { margin-top: 0; font-size: 18px; color: var(--primary-color); }
+        .coaching-section h2 { margin-top: 0; font-size: 18px; color: var(--dark-bg); }
         
-        /* 멘트 공간 홀더 */
         .coaching-placeholder {
             background: var(--light-bg);
             border: 1px dashed #b2bec3;
@@ -137,6 +144,7 @@
             border-radius: 6px;
             color: #636e72;
             font-style: italic;
+            line-height: 1.6;
         }
     </style>
 </head>
@@ -144,13 +152,13 @@
 
 <div class="container">
     <header>
-        <h1>편의점 영업지원 날씨 대시보드</h1>
-        <p>담당 지역(대전/세종/충남/광주/전남/전북) 맞춤형 주간 날씨 및 발주 가이드</p>
+        <h1>GS25 지역별 주간 날씨 및 발주 가이드</h1>
+        <p>지역별 주간 날씨 파악 후 사전 준비를 통한 매출 활성화</p>
     </header>
 
     <div class="filter-section">
         <div class="filter-group">
-            <label for="region-select">시/도</label>
+            <label for="region-select">시/도 영업권역</label>
             <select id="region-select" onchange="updateSubRegions()">
                 <option value="대전">대전광역시</option>
                 <option value="세종">세종특별자치시</option>
@@ -162,7 +170,7 @@
         </div>
 
         <div class="filter-group">
-            <label for="subregion-select">시/군/구</label>
+            <label for="subregion-select">시/군/구 선택</label>
             <select id="subregion-select" onchange="getWeatherData()">
                 </select>
         </div>
@@ -177,54 +185,107 @@
         </div>
 
     <div class="coaching-section">
-        <h2>💡 지역 맞춤형 발주 코칭 가이드</h2>
+        <h2>💡 날씨 및 연휴 연동 자동 발주 코칭</h2>
         <div id="coaching-container">
             <div class="coaching-placeholder">
-                [알림] 현재 날씨 및 공휴일 연동 데이터 분석 중... <br>
-                (추후 이곳에 날씨/연휴 조건별 자동 발주 추천 코칭 멘트 로직이 삽입될 예정입니다.)
+                [알림] 점포 매출 극대화를 위한 발주 코칭 로직 대기 중... <br>
+                (추후 기획하시는 날씨 조건 및 연휴 상황별 상품군 발주 권장/제한 안내 멘트 로직 코드가 삽입될 예약 공간입니다.)
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // 1. 담당 지역 데이터 (위경도 포함)
+    // 1. 요청하신 6개 시도 산하 모든 시군구 데이터 완전 매핑 (위경도 좌표 포함)
     const regionData = {
-        "대전": { "전체": { lat: 36.3504, lon: 127.3845 } },
-        "세종": { "전체": { lat: 36.4800, lon: 127.2890 } },
+        "대전": {
+            "동구": { lat: 36.3121, lon: 127.4542 },
+            "중구": { lat: 36.3172, lon: 127.4099 },
+            "서구": { lat: 36.3019, lon: 127.3631 },
+            "유성구": { lat: 36.3622, lon: 127.3563 },
+            "대덕구": { lat: 36.3789, lon: 127.4433 }
+        },
+        "세종": {
+            "세종특별자치시 전체": { lat: 36.4800, lon: 127.2890 }
+        },
+        "광주": {
+            "동구": { lat: 35.1461, lon: 126.9231 },
+            "서구": { lat: 35.1462, lon: 126.8681 },
+            "남구": { lat: 35.1186, lon: 126.8968 },
+            "북구": { lat: 35.1974, lon: 126.9103 },
+            "광산구": { lat: 35.1395, lon: 126.7915 }
+        },
         "충남": {
-            "천안시": { lat: 36.8151, lon: 127.1139 },
+            "천안시 동남구": { lat: 36.8056, lon: 127.1541 },
+            "천안시 서북구": { lat: 36.8427, lon: 127.1152 },
+            "공주시": { lat: 36.4465, lon: 127.1190 },
+            "보령시": { lat: 36.3333, lon: 126.6166 },
             "아산시": { lat: 36.7836, lon: 127.0039 },
             "서산시": { lat: 36.7845, lon: 126.4506 },
+            "논산시": { lat: 36.1872, lon: 127.0986 },
+            "계룡시": { lat: 36.2745, lon: 127.2486 },
             "당진시": { lat: 36.8927, lon: 126.6283 },
-            "공주시": { lat: 36.4465, lon: 127.1190 }
+            "금산군": { lat: 36.1088, lon: 127.4883 },
+            "부여군": { lat: 36.2756, lon: 126.9097 },
+            "서천군": { lat: 36.0803, lon: 126.6914 },
+            "청양군": { lat: 36.4538, lon: 126.8031 },
+            "홍성군": { lat: 36.6014, lon: 126.6608 },
+            "예산군": { lat: 36.6796, lon: 126.8436 },
+            "태안군": { lat: 36.7456, lon: 126.2975 }
         },
-        "광주": { "전체": { lat: 35.1595, lon: 126.8526 } },
         "전북": {
-            "전주시": { lat: 35.8242, lon: 127.1480 },
-            "익산시": { lat: 35.9483, lon: 126.9576 },
+            "전주시 완산구": { lat: 35.8032, lon: 127.1192 },
+            "전주시 덕진구": { lat: 35.8462, lon: 127.1218 },
             "군산시": { lat: 35.9677, lon: 126.7366 },
-            "완주군": { lat: 35.9048, lon: 127.1622 }
+            "익산시": { lat: 35.9483, lon: 126.9576 },
+            "정읍시": { lat: 35.5699, lon: 126.8586 },
+            "남원시": { lat: 35.4164, lon: 127.3904 },
+            "김제시": { lat: 35.8036, lon: 126.8808 },
+            "완주군": { lat: 35.9048, lon: 127.1622 },
+            "진안군": { lat: 35.7914, lon: 127.4247 },
+            "무주군": { lat: 36.0064, lon: 127.6606 },
+            "장수군": { lat: 35.6472, lon: 127.5214 },
+            "임실군": { lat: 35.6178, lon: 127.2889 },
+            "순창군": { lat: 35.3744, lon: 127.1375 },
+            "고창군": { lat: 35.4358, lon: 126.7022 },
+            "부안군": { lat: 35.7317, lon: 126.7336 }
         },
         "전남": {
+            "목포시": { lat: 34.8118, lon: 126.3922 },
             "여수시": { lat: 34.7604, lon: 127.6622 },
             "순천시": { lat: 34.9506, lon: 127.4872 },
-            "목포시": { lat: 34.8118, lon: 126.3922 },
-            "광양시": { lat: 34.9405, lon: 127.6959 }
+            "나주시": { lat: 35.0158, lon: 126.7108 },
+            "광양시": { lat: 34.9405, lon: 127.6959 },
+            "담양군": { lat: 35.3192, lon: 126.9850 },
+            "곡성군": { lat: 35.2811, lon: 127.2917 },
+            "구례군": { lat: 35.2025, lon: 127.4703 },
+            "고흥군": { lat: 34.6144, lon: 127.2839 },
+            "보성군": { lat: 34.7664, lon: 127.0800 },
+            "화순군": { lat: 35.0644, lon: 126.9864 },
+            "장흥군": { lat: 34.6814, lon: 126.9197 },
+            "강진군": { lat: 34.6425, lon: 126.7694 },
+            "해남군": { lat: 34.5733, lon: 126.5992 },
+            "영암군": { lat: 34.8003, lon: 126.6964 },
+            "무안군": { lat: 34.9903, lon: 126.4817 },
+            "함평군": { lat: 35.0658, lon: 126.5164 },
+            "영광군": { lat: 35.2772, lon: 126.5122 },
+            "장성군": { lat: 35.3017, lon: 126.7844 },
+            "완도군": { lat: 34.3114, lon: 126.7550 },
+            "진도군": { lat: 34.4869, lon: 126.2633 },
+            "신안군": { lat: 34.8264, lon: 126.1086 }
         }
     };
 
-    // 2. 대한민국 법정 공휴일 (고정/대략적 계산 매핑 - 실제 상용시 API 권장)
+    // 2. 고정 법정 공휴일 지정 (양력 기준)
     const holidays = {
         "01-01": "신정", "03-01": "삼일절", "05-05": "어린이날", 
         "06-06": "현충일", "08-15": "광복절", "10-03": "개천절", 
         "10-09": "한글날", "12-25": "성탄절"
-        // 음력 공휴일(설날/추석/석탄일)은 수동 추가 또는 외부 API 연동이 필요합니다.
     };
 
-    let currentWeek = 'this'; // 'this' 또는 'next'
+    let currentWeek = 'this'; // 'this'(금주) 또는 'next'(차주)
 
-    // 시군구 셀렉트 박스 업데이트
+    // 시군구 셀렉트 박스 동적 매핑 함수
     function updateSubRegions() {
         const regionSelect = document.getElementById("region-select");
         const subregionSelect = document.getElementById("subregion-select");
@@ -241,7 +302,7 @@
         getWeatherData();
     }
 
-    // 주간 변경 버튼 이벤트
+    // 금주/차주 선택 상태 변경 및 재연동
     function changeWeek(week) {
         currentWeek = week;
         document.getElementById("btn-this-week").classList.toggle("active", week === 'this');
@@ -249,7 +310,7 @@
         getWeatherData();
     }
 
-    // 날씨 코드에 따른 이모지 반환
+    // 날씨 현황 코드 매핑 이모지
     function getWeatherIcon(code) {
         if (code === 0) return "☀️";
         if (code <= 3) return "⛅";
@@ -260,36 +321,43 @@
         return "⛈️";
     }
 
-    // 날씨 데이터 가져오기 (Open-Meteo API)
+    // Open-Meteo API 실시간 데이터 송수신 (차주 데이터 확보 버그 전면 수정)
     function getWeatherData() {
         const region = document.getElementById("region-select").value;
         const subregion = document.getElementById("subregion-select").value;
+        
+        if (!subregion) return; // 하위지역 선택 전 예외처리
+        
         const coords = regionData[region][subregion];
 
-        // 14일치 데이터를 받아와서 7일씩 쪼개어 사용
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul`;
+        // [핵심 변경] forecast_days=14 옵션을 명시하여 차주 7일 데이터도 완벽하게 받아옵니다.
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&forecast_days=14&timezone=Asia%2FSeoul`;
 
         fetch(url)
             .then(res => res.json())
             .then(data => {
-                renderWeather(data.daily);
+                if(data && data.daily) {
+                    renderWeather(data.daily);
+                }
             })
-            .catch(err => console.error("날씨 데이터를 불러오는데 실패했습니다.", err));
+            .catch(err => console.error("데이터 통신에 실패했습니다.", err));
     }
 
-    // 화면에 날씨 카드 렌더링
+    // 대시보드 화면에 날씨 카드를 구성하여 렌더링
     function renderWeather(dailyData) {
         const container = document.getElementById("weather-grid-container");
         container.innerHTML = "";
 
-        // 금주(0~6일째), 차주(7~13일째) 인덱스 정의
+        // 인덱스를 분리하여 금주(0~6), 차주(7~13) 처리 구현
         const startIndex = currentWeek === 'this' ? 0 : 7;
         const endIndex = startIndex + 7;
 
         const dayLabels = ["일", "월", "화", "수", "목", "금", "토"];
 
         for (let i = startIndex; i < endIndex; i++) {
-            const dateStr = dailyData.time[i]; // YYYY-MM-DD
+            if (!dailyData.time[i]) break;
+
+            const dateStr = dailyData.time[i]; // YYYY-MM-DD 형태
             const maxTemp = Math.round(dailyData.temperature_2m_max[i]);
             const minTemp = Math.round(dailyData.temperature_2m_min[i]);
             const weatherCode = dailyData.weathercode[i];
@@ -298,8 +366,8 @@
             const monthDay = `${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
             const dayOfWeek = dayLabels[dateObj.getDay()];
             
-            // 공휴일 및 요일 체크
-            const mmdd = dateStr.substring(5, 10); // MM-DD
+            // 공휴일 확인용 월-일 파싱
+            const mmdd = dateStr.substring(5, 10); 
             const isHoliday = holidays[mmdd] || false;
             
             let cardClass = "weather-card";
@@ -324,7 +392,7 @@
         }
     }
 
-    // 초기 실행
+    // 첫 실행 시 화면 가동 로직
     window.onload = function() {
         updateSubRegions();
     };
