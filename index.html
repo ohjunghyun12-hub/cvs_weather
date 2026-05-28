@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GS25 지역별 주간 날씨 및 발주 가이드</title>
+    <!-- Tailwind CSS 및 FontAwesome 아이콘 로드 -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -13,6 +14,7 @@
 </head>
 <body class="text-slate-800 antialiased pb-12">
 
+    <!-- 상단 헤더 -->
     <header class="bg-gradient-to-r from-blue-700 to-cyan-600 text-white shadow-md">
         <div class="max-w-6xl mx-auto px-4 py-5 flex justify-between items-center">
             <div class="flex items-center space-x-3">
@@ -22,16 +24,20 @@
         </div>
     </header>
 
+    <!-- 메인 컨테이너 -->
     <main class="max-w-6xl mx-auto px-4 mt-6 space-y-6">
         
+        <!-- 상단 영역: 조건 선택 및 주간 기상 정보 -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
+            <!-- 환경 설정 카드 -->
             <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200 space-y-4 flex flex-col justify-between">
                 <div>
                     <div class="border-b border-slate-100 pb-2 mb-3">
                         <h2 class="font-bold text-slate-900 flex items-center"><i class="fa-solid fa-map-location-dot text-blue-600 mr-2"></i>지역 및 시점 선택</h2>
                     </div>
 
+                    <!-- 1. 지역 선택 -->
                     <div class="grid grid-cols-2 gap-2 mb-3">
                         <div>
                             <label class="block text-xs font-bold text-slate-500 mb-1">시/도</label>
@@ -47,10 +53,12 @@
                         <div>
                             <label class="block text-xs font-bold text-slate-500 mb-1">시/군/구</label>
                             <select id="sigunguSelect" onchange="calculateWeatherAndCoaching()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                                </select>
+                                <!-- 자바스크립트에서 동적 생성 -->
+                            </select>
                         </div>
                     </div>
 
+                    <!-- 2. 주차 선택 -->
                     <div class="mb-3">
                         <label class="block text-xs font-bold text-slate-500 mb-1">코칭 대상 주차</label>
                         <div class="grid grid-cols-2 gap-2">
@@ -59,6 +67,7 @@
                         </div>
                     </div>
 
+                    <!-- 3. 상권 분류 -->
                     <div class="mb-3">
                         <label class="block text-xs font-bold text-slate-500 mb-1">점포 상권 유형</label>
                         <select id="sangkwonSelect" onchange="calculateWeatherAndCoaching()" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
@@ -73,8 +82,9 @@
                     </div>
                 </div>
 
+                <!-- 4. 특수 이벤트 체크 -->
                 <div class="flex items-center pt-2 border-t border-slate-100">
-                    <input type="checkbox" id="worldcupCheck" onchange="calculateWeatherAndCoaching()" class="w-4 h-4 text-blue-600 bg-slate-100 border-slate-300 rounded focus:ring-blue-500">
+                    <input type="checkbox" id="worldcupCheck" checked onchange="calculateWeatherAndCoaching()" class="w-4 h-4 text-blue-600 bg-slate-100 border-slate-300 rounded focus:ring-blue-500">
                     <label for="worldcupCheck" class="ml-2 text-xs font-bold text-slate-700 select-none flex items-center">
                         <span>6월 월드컵 경기 일정 포함</span>
                         <span class="ml-1.5 bg-red-100 text-red-600 text-[9px] px-1.5 py-0.5 rounded-full">특수</span>
@@ -82,8 +92,10 @@
                 </div>
             </div>
 
+            <!-- 주간 날씨 모니터링 판넬 -->
             <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200 lg:col-span-2">
                 <div class="border-b border-slate-100 pb-2 mb-4 flex justify-between items-center">
+                    <!-- [고정 완료] 이제 자바스크립트가 새로고침되어도 덮어쓰지 않도록 텍스트를 철저하게 박아두었습니다. -->
                     <h3 class="font-bold text-slate-900 text-sm flex items-center" id="weatherPanelTitle">
                         <i class="fa-solid fa-calendar-week text-cyan-600 mr-2"></i>
                         주간 기상 분석(실시간 날짜 연동)
@@ -91,12 +103,15 @@
                     <span id="todayBadge" class="text-xs bg-slate-100 text-slate-600 font-medium px-2.5 py-1 rounded-md"></span>
                 </div>
                 <div id="weeklyWeatherContainer" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2.5">
-                    </div>
+                    <!-- 데이터 렌더링 -->
+                </div>
             </div>
         </section>
 
+        <!-- 하단 영역: 실시간 발주 코칭 솔루션 및 카테고리 가이드 -->
         <section class="space-y-6">
             
+            <!-- 경영주 발주 코칭 스크립트 -->
             <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                     <h2 class="text-base font-bold text-slate-900 flex items-center">
@@ -112,12 +127,14 @@
                 </blockquote>
             </div>
 
+            <!-- 카테고리별 상세 가이드라인 -->
             <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200 space-y-5">
                 <div class="border-b border-slate-100 pb-2">
                     <h3 class="font-bold text-slate-900 text-sm flex items-center"><i class="fa-solid fa-boxes-stacked text-indigo-600 mr-2"></i>카테고리별 종합 발주 가이드</h3>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- 1. FRESH FOOD -->
                     <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
                         <h4 class="font-bold text-xs sm:text-sm text-cyan-700 mb-2 flex items-center">
                             <i class="fa-solid fa-box-tissue mr-1.5"></i> FRESH FOOD (FF)
@@ -125,6 +142,7 @@
                         <p id="ffContent" class="text-xs text-slate-600 leading-relaxed whitespace-pre-line"></p>
                     </div>
 
+                    <!-- 2. 카운터 FF -->
                     <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
                         <h4 class="font-bold text-xs sm:text-sm text-orange-700 mb-2 flex items-center">
                             <i class="fa-solid fa-drumstick-bite mr-1.5"></i> 카운터 FF (즉석조리)
@@ -132,6 +150,7 @@
                         <p id="counterFfContent" class="text-xs text-slate-600 leading-relaxed whitespace-pre-line"></p>
                     </div>
 
+                    <!-- 3. 주류 / 음료 -->
                     <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
                         <h4 class="font-bold text-xs sm:text-sm text-blue-700 mb-2 flex items-center">
                             <i class="fa-solid fa-beer-mug-empty mr-1.5"></i> 주류 / 음료 카테고리
@@ -139,6 +158,7 @@
                         <p id="drinkContent" class="text-xs text-slate-600 leading-relaxed whitespace-pre-line"></p>
                     </div>
 
+                    <!-- 4. 일반상품 / 아이스 / 비식품 -->
                     <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
                         <h4 class="font-bold text-xs sm:text-sm text-purple-700 mb-2 flex items-center">
                             <i class="fa-solid fa-snowflake mr-1.5"></i> 아이스 / 가공 / 비식품
@@ -150,6 +170,7 @@
         </section>
     </main>
 
+    <!-- 스크립트 및 비즈니스 데이터 매핑 엔진 -->
     <script>
         const regionStructure = {
             daejeon: ["동구", "중구", "서구", "유성구", "대덕구"],
