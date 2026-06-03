@@ -79,7 +79,7 @@
                         <span id="todayBadge" class="text-xs bg-slate-100 text-slate-600 font-medium px-2.5 py-1 rounded-md"></span>
                     </div>
                     <div id="weeklyWeatherContainer" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2.5">
-                        <!-- 날씨 데이터 및 매치 배드민턴 렌더링 -->
+                        <!-- 날씨 데이터 및 매치 배너 렌더링 -->
                     </div>
                 </div>
                 
@@ -136,13 +136,13 @@
             "06-06": "현충일", "08-15": "광복절", "10-03": "개천절", "10-09": "한글날"
         };
 
-        // 6/12 대한민국 vs 체코 일정 확실하게 반영 완료
+        // [수정] 대한민국 모든 미래 경기에 시간(오후 9시, 오전 10시 등) 명확히 추가 완료
         const worldCupMatches = {
-            "06-12": "오전 2시 30분 개막식 / 오전 4시 멕시코 vs 남아프리카 공화국 / 대한민국 vs 체코 (빅매치)",
+            "06-12": "오전 2시 30분 개막식 / 오전 4시 멕시코 vs 남아프리카 공화국 / 오후 9시 대한민국 vs 체코",
             "06-19": "오전 10시 대한민국 vs 멕시코",
             "06-25": "오전 10시 대한민국 vs 남아프리카 공화국",
-            "07-15": "대한민국 준결승 경기",
-            "07-19": "결승 경기"
+            "07-15": "오전 9시 대한민국 준결승 경기",
+            "07-19": "오전 9시 월드컵 결승 경기"
         };
 
         let currentWeek = 'this';
@@ -231,16 +231,17 @@
 
             if (matchedGames.length > 0) {
                 let gamesStr = matchedGames.map(g => g.mdKey.replace('-','/') + ' ' + g.matchInfo).join(', ');
-                scriptText += `\n\n⚽ [빅 이벤트 안내] 이번 주 월드컵 주요 경기(${gamesStr})가 예정되어 있습니다. 대부분의 경기가 새벽~오전에 열리는 점을 고려하여, 새벽 시청을 위한 각성 음료 및 아침 식사 대용품, 그리고 출근 전 해장용 상품 위주로 발주를 대폭 강화해 주세요.`;
+                scriptText += `\n\n⚽ [빅 이벤트 안내] 이번 주 월드컵 주요 경기(${gamesStr})가 예정되어 있습니다. 경기 시간대를 고려하여 야간 홈술족 가이드 및 당일 각성 음료, 식사 대용품 위주로 발주를 대폭 강화해 주세요.`;
                 
                 guides.unshift({ 
-                    target: "🔥 월드컵 특수 (새벽/오전 경기 집중 공략)", 
+                    target: "🔥 월드컵 특수 (날짜·시간별 맞춤 공략)", 
                     icon: "fa-futbol", 
                     color: "text-red-700", bg: "bg-red-50", border: "border-red-300", 
                     points: [
-                        "잠 깨는 새벽 시청자 타겟: 카페25, 캔커피, 에너지 음료 골든존 전면 배치",
-                        "출출한 새벽 및 아침 식사 대용: 국물용 컵라면, 죽, 샌드위치, 김밥 발주 1.5배 확대",
-                        "기본 주류/안주 수요와 더불어 출근 전 해장 고객을 위한 숙취해소제, 비타민 음료, 무알콜 맥주 구색 강화"
+                        "대한민국 경기 시간대 집중: 야간 경기(오후 9시) 시 주류 및 카운터 안주 조각치킨 대량 상시 노출",
+                        "오전/새벽 경기 시청자 타겟: 카페25, 캔커피, 에너지 음료 골든존 전면 배치",
+                        "출출한 새벽 및 아침 식사 대용: 국물용 컵라면, 냉장 안주, 샌드위치, 김밥 발주 1.5배 확대",
+                        "경기 종료 후 출근길 대응: 해장 고객을 위한 숙취해소제, 비타민 음료, 헛개수 구색 강화"
                     ]
                 });
             }
@@ -277,11 +278,14 @@
                 let dayClass = item.isRedDay ? "text-red-600 font-extrabold" : "text-slate-600 font-bold";
                 let holidayTag = item.holidayName ? `<div class="absolute -top-2 right-0 text-[10px] bg-red-500 text-white font-bold px-1.5 py-0.5 rounded-full shadow-sm">${item.holidayName}</div>` : "";
                 
-                // [수정] 캘린더 그리드 내부에도 대한민국 경기 여부를 직관적인 컬러 배지로 표시
+                // 캘린더 내부 카드 매치 배지 보완 (시간 포함 안내)
                 let gridMatchBadge = "";
                 if(item.matchInfo) {
                     if(item.matchInfo.includes("대한민국")) {
-                        gridMatchBadge = `<div class="text-[10px] bg-red-600 text-white font-extrabold px-1.5 py-0.5 rounded mt-1 animate-pulse shadow-xs">⚽ 韓 경기!</div>`;
+                        // 시간 추출 시도
+                        let timeMatch = item.matchInfo.match(/(오전|오후)\s*\d+시(\s*\d+분)?/g);
+                        let timeStr = timeMatch ? timeMatch[timeMatch.length - 1] : "경기일";
+                        gridMatchBadge = `<div class="text-[10px] bg-red-600 text-white font-extrabold px-1.5 py-0.5 rounded mt-1 animate-pulse shadow-xs">⚽ 韓 (${timeStr})</div>`;
                     } else {
                         gridMatchBadge = `<div class="text-[10px] bg-slate-200 text-slate-700 font-medium px-1 py-0.5 rounded mt-1">⚽ 월드컵</div>`;
                     }
@@ -316,15 +320,15 @@
                     let parts = g.matchInfo.split('/');
                     let highlightedParts = parts.map(p => {
                         let trimmed = p.trim();
-                        // 대한민국이 들어간 대진 텍스트 전체를 화사한 레드 테두리 배지로 강조
+                        // 대한민국 경기일 경우 레드 배지로 시간과 대진 정보 완벽 마킹
                         if(trimmed.includes("대한민국")) {
                             return `<span class="text-red-600 font-extrabold bg-red-50 px-2 py-0.5 rounded-md border-2 border-red-500 shadow-sm mx-0.5 inline-block">${trimmed}</span>`;
                         }
-                        return `<span>${trimmed}</span>`;
+                        return `<span class="text-slate-600 font-medium">${trimmed}</span>`;
                     });
-                    return `<div class="flex items-center flex-wrap gap-1 bg-white p-1.5 rounded-lg border border-slate-200 shadow-2xs w-full"><span class="text-slate-500 font-bold bg-slate-100 px-1.5 py-0.5 rounded mr-1">${g.dateString}(${g.dayLabel})</span> ${highlightedParts.map(hp => hp).join(' <span class="text-slate-300">/</span> ')}</div>`;
+                    return `<div class="flex items-center flex-wrap gap-1 bg-white p-2 rounded-lg border border-slate-200 shadow-2xs w-full"><span class="text-blue-700 font-extrabold bg-blue-50 px-2 py-0.5 rounded border border-blue-200 mr-1.5">${g.dateString}(${g.dayLabel})</span> ${highlightedParts.join(' <span class="text-slate-300">/</span> ')}</div>`;
                 }).join('');
-                eventHtml += `<div class="text-sm font-bold text-blue-700 flex flex-col gap-1.5 w-full"><div class="flex items-center"><i class="fa-solid fa-futbol mr-1.5"></i>2026 월드컵 주요 경기 현황</div>${gStr}</div>`;
+                eventHtml += `<div class="text-sm font-bold text-slate-900 flex flex-col gap-1.5 w-full"><div class="flex items-center text-blue-700 font-bold"><i class="fa-solid fa-futbol mr-1.5"></i>2026 월드컵 주요 경기 상세 일정 (날짜/요일/시간/대진)</div>${gStr}</div>`;
             }
             
             if(eventHtml === "") {
@@ -340,9 +344,9 @@
 
             const { scriptText, guides } = buildUnifiedGuide(primaryWeather, matchedHolidays, matchedGames);
             
-            // 왼쪽 말풍선(요약 스크립트) 내부에서도 대한민국 vs 체코 및 한국 대표팀 경기 텍스트 강조 처리
+            // 종합 코칭 요약 스크립트에서도 시간과 대진이 포함된 대한민국 경기 텍스트 강조 강조
             let formattedScript = scriptText.replace(/\n/g, '<br>');
-            formattedScript = formattedScript.replace(/(대한민국\s*vs\s*[가-힣\s\(\)]+|대한민국 준결승 경기)/g, '<span class="text-red-600 font-extrabold bg-red-50 px-1 rounded border border-red-300">$1</span>');
+            formattedScript = formattedScript.replace(/((오전|오후)\s*\d+시(\s*\d+분)?\s*대한민국\s*vs\s*[가-힣]+|대한민국 준결승 경기)/g, '<span class="text-red-600 font-extrabold bg-red-50 px-1 rounded border border-red-300">$1</span>');
             document.getElementById("coachingQuote").innerHTML = formattedScript;
             
             let guidesHtml = "";
