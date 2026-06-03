@@ -136,11 +136,11 @@
             "06-06": "현충일", "08-15": "광복절", "10-03": "개천절", "10-09": "한글날"
         };
 
-        // 월드컵 개막식 및 주요 경기(새벽~오전 시간대 반영)
+        // 월드컵 개막식 및 주요 경기 대한민국 경기 추가 완료
         const worldCupMatches = {
-            "06-12": "오전 2시 30분 개막식 / 오전 4시 멕시코 vs 남아프리카 공화국",
-            "06-19": "오전 10시, 대한민국 vs 멕시코",
-            "06-25": "오전 10시, 대한민국 vs 남아프리카 공화국",
+            "06-12": "오전 2시 30분 개막식 / 오전 4시 멕시코 vs 남아프리카 공화국 / 대한민국 vs 체코 (주요경기)",
+            "06-19": "오전 10시 대한민국 vs 멕시코",
+            "06-25": "오전 10시 대한민국 vs 남아프리카 공화국",
             "07-15": "대한민국 준결승 경기",
             "07-19": "결승 경기"
         };
@@ -215,7 +215,6 @@
             let guides = [];
             let scriptText = "";
 
-            // 기본 기상 타겟 상권
             if (primaryWeather === "hot_core") {
                 scriptText = "이번 주 무더운 폭염 날씨로 인해 유동인구가 많은 번화가와 야간 거주지 상권의 빙과, 음료 수요가 급증할 예정입니다. 아이스컵과 빙과류 재고 확보에 만전을 기해주십시오.";
                 guides.push({ target: "유동강세 (역세권/번화가)", icon: "fa-fire", color: "text-orange-600", bg: "bg-orange-50", border: "border-orange-200", points: ["아이스컵(일반/빅), 파우치 음료, 500ml 생수 전면 배치 및 재고 최대치 확보", "야간 유동인구 증가 대비 소형 컵과일, 아이스크림 보강", "이동 취식형 완제품(줄김밥, 햄버거) 결품 주의 및 카페25 기기 점검"] });
@@ -230,7 +229,6 @@
                 guides.push({ target: "주거/학원가 복합", icon: "fa-school", color: "text-teal-600", bg: "bg-teal-50", border: "border-teal-200", points: ["하교/퇴근 시간대 삼각김밥, 간편 조리빵 등 회전율 높은 FF 위주 전개", "10~20대 타겟 에너지드링크, 제로 탄산음료 냉장고 전면 노출", "카운터 FF (핫도그, 꼬치류) 하교 시간대 맞춤 조리"] });
             }
 
-            // 스포츠 이벤트(월드컵 - 새벽/오전 시간대 특화 반영)
             if (matchedGames.length > 0) {
                 let gamesStr = matchedGames.map(g => g.mdKey.replace('-','/') + ' ' + g.matchInfo).join(', ');
                 scriptText += `\n\n⚽ [빅 이벤트 안내] 이번 주 월드컵 주요 경기(${gamesStr})가 예정되어 있습니다. 대부분의 경기가 새벽~오전에 열리는 점을 고려하여, 새벽 시청을 위한 각성 음료 및 아침 식사 대용품, 그리고 출근 전 해장용 상품 위주로 발주를 대폭 강화해 주세요.`;
@@ -301,8 +299,19 @@
                 eventHtml += `<p class="text-sm font-bold text-red-600"><i class="fa-regular fa-calendar-check mr-1.5"></i>${hStr}</p>`;
             }
             if (matchedGames.length > 0) {
-                let gStr = matchedGames.map(g => `${g.dateString}(${g.dayLabel}) ${g.matchInfo}`).join(' / ');
-                eventHtml += `<p class="text-sm font-bold text-blue-700"><i class="fa-solid fa-futbol mr-1.5"></i>2026 월드컵 주요경기: ${gStr}</p>`;
+                let gStr = matchedGames.map(g => {
+                    let parts = g.matchInfo.split('/');
+                    let highlightedParts = parts.map(p => {
+                        let trimmed = p.trim();
+                        // 대한민국 경기 텍스트 컬러 다르게 강조 적용
+                        if(trimmed.includes("대한민국")) {
+                            return `<span class="text-red-600 font-extrabold bg-red-50 px-1.5 py-0.5 rounded border border-red-200 shadow-xs">${trimmed}</span>`;
+                        }
+                        return trimmed;
+                    });
+                    return `${g.dateString}(${g.dayLabel}) ${highlightedParts.join(' / ')}`;
+                }).join(' // ');
+                eventHtml += `<p class="text-sm font-bold text-blue-700 flex flex-wrap items-center gap-y-1"><i class="fa-solid fa-futbol mr-1.5"></i>2026 월드컵 주요경기: &nbsp;${gStr}</p>`;
             }
             
             if(eventHtml === "") {
@@ -318,7 +327,10 @@
 
             const { scriptText, guides } = buildUnifiedGuide(primaryWeather, matchedHolidays, matchedGames);
             
-            document.getElementById("coachingQuote").innerText = scriptText;
+            // 요약 스크립트 본문에서도 대한민국 경기 하이라이트 구현
+            let formattedScript = scriptText.replace(/\n/g, '<br>');
+            formattedScript = formattedScript.replace(/(대한민국\s*vs\s*[가-힣]+|대한민국 준결승 경기)/g, '<span class="text-red-600 font-bold bg-red-50 px-1 rounded border border-red-200">$1</span>');
+            document.getElementById("coachingQuote").innerHTML = formattedScript;
             
             let guidesHtml = "";
             guides.forEach(g => {
