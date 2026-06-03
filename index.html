@@ -29,7 +29,7 @@
         <!-- 상단 영역: 조건 선택 및 주간 기상/이벤트 정보 -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <!-- 좌측 컨트롤러 (간소화됨) -->
+            <!-- 좌측 컨트롤러 -->
             <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200 space-y-4">
                 <div class="border-b border-slate-100 pb-2 mb-3">
                     <h2 class="font-bold text-slate-900 flex items-center"><i class="fa-solid fa-map-location-dot text-blue-600 mr-2"></i>지역 및 주차 선택</h2>
@@ -97,14 +97,14 @@
                     <i class="fa-solid fa-lightbulb text-yellow-500 mr-2"></i> 기상/이벤트 기반 주간 발주 핵심 가이드
                 </h2>
                 <button onclick="copyScript()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg flex items-center transition font-bold border border-slate-200">
-                    <i class="fa-regular fa-copy mr-1.5"></i> 코칭 스크립트 복사
+                    <i class="fa-regular fa-copy mr-1.5"></i> 가이드 요약 복사
                 </button>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- 통합 코칭 스크립트 -->
+                <!-- 종합 코칭 스크립트 -->
                 <div class="md:col-span-1">
-                    <h3 class="text-xs font-bold text-slate-500 mb-2">경영주 전파용 요약 스크립트</h3>
+                    <h3 class="text-xs font-bold text-slate-500 mb-2">주간 기상·이벤트 종합 코칭 요약</h3>
                     <blockquote id="coachingQuote" class="bg-blue-50 border-l-4 border-blue-600 p-4 rounded-r-lg text-slate-800 text-sm leading-relaxed font-medium whitespace-pre-line shadow-sm">
                         <!-- 동적 텍스트 생성 -->
                     </blockquote>
@@ -112,7 +112,7 @@
                 
                 <!-- 핵심 상권 타겟 가이드 -->
                 <div class="md:col-span-2 space-y-3">
-                    <h3 class="text-xs font-bold text-slate-500 mb-2">이번 주 집중 공략 상권 가이드 (날씨 영향도 반영)</h3>
+                    <h3 class="text-xs font-bold text-slate-500 mb-2">이번 주 집중 공략 상권 가이드 (날씨 및 이벤트 반영)</h3>
                     <div id="dynamicGuidesContainer" class="space-y-3">
                         <!-- 동적 카드 생성 -->
                     </div>
@@ -132,25 +132,21 @@
             jeonnam: ["목포시", "여수시", "순천시", "나주시", "광양시"]
         };
 
-        const sidoLabels = {
-            daejeon: "대전광역시", sejong: "세종특별자치시", chungnam: "충청남도",
-            gwangju: "광주광역시", jeonbuk: "전북특별자치도", jeonnam: "전라남도"
-        };
-
         const nationalHolidays = {
             "06-06": "현충일", "08-15": "광복절", "10-03": "개천절", "10-09": "한글날"
         };
 
+        // 월드컵 개막식 및 주요 경기(새벽~오전 시간대 반영)
         const worldCupMatches = {
-            "06-12": "오전 11시, vs 체코",
-            "06-19": "오전 10시, vs 멕시코",
-            "06-25": "오전 10시, vs 남아프리카 공화국",
-            "07-15": "준결승 경기",
+            "06-12": "오전 2시 30분 개막식 / 오전 4시 멕시코 vs 남아프리카 공화국",
+            "06-19": "오전 10시, 대한민국 vs 멕시코",
+            "06-25": "오전 10시, 대한민국 vs 남아프리카 공화국",
+            "07-15": "대한민국 준결승 경기",
             "07-19": "결승 경기"
         };
 
         let currentWeek = 'this';
-        let plainScriptText = ""; // 복사용 텍스트
+        let plainScriptText = ""; 
 
         function updateSigungu() {
             const sido = document.getElementById("sidoSelect").value;
@@ -170,7 +166,6 @@
             calculateWeatherAndCoaching();
         }
 
-        // 기준일(2026-06-03) 바탕으로 날짜 계산
         function getDatesList(week) {
             const baseDate = new Date("2026-06-03T10:14:10"); 
             if (week === 'next') baseDate.setDate(baseDate.getDate() + 7);
@@ -222,9 +217,9 @@
 
             // 기본 기상 타겟 상권
             if (primaryWeather === "hot_core") {
-                scriptText = "이번 주 무더운 폭염 날씨로 인해 유동인구가 많은 번화가와 야간 거주지 상권의 빙과, 음료 수요가 급증할 예정입니다. 아이스컵과 주류 재고 확보에 만전을 기해주십시오.";
+                scriptText = "이번 주 무더운 폭염 날씨로 인해 유동인구가 많은 번화가와 야간 거주지 상권의 빙과, 음료 수요가 급증할 예정입니다. 아이스컵과 빙과류 재고 확보에 만전을 기해주십시오.";
                 guides.push({ target: "유동강세 (역세권/번화가)", icon: "fa-fire", color: "text-orange-600", bg: "bg-orange-50", border: "border-orange-200", points: ["아이스컵(일반/빅), 파우치 음료, 500ml 생수 전면 배치 및 재고 최대치 확보", "야간 유동인구 증가 대비 소형 컵과일, 아이스크림 보강", "이동 취식형 완제품(줄김밥, 햄버거) 결품 주의 및 카페25 기기 점검"] });
-                guides.push({ target: "주거밀착 (아파트/빌라)", icon: "fa-building", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200", points: ["열대야 대비 야간 홈술족 타겟 국산/수입 캔맥주 번들(4캔) 대량 적재", "가족 단위 통형 아이스크림 및 안주류(육포, 마른안주) 1.5배 보강", "심야 시간대 조각 치킨류(카운터 FF) 소량 상시 노출"] });
+                guides.push({ target: "주거밀착 (아파트/빌라)", icon: "fa-building", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200", points: ["열대야 대비 야간 홈술족 타겟 국산/수입 캔맥주 번들(4캔) 대량 적재", "가족 단위 통형 아이스크림 및 야간 간식류 1.5배 보강", "심야 시간대 조각 치킨류(카운터 FF) 소량 상시 노출"] });
             } else if (primaryWeather === "rain_heavy") {
                 scriptText = "이번 주 잦은 비 소식으로 외출이 줄면서 배달(우리동네GS) 수요와 오피스 상권의 구내 식사 수요가 크게 늘어날 전망입니다. 우산 전면 배치와 가정간편식 발주를 늘려주세요.";
                 guides.push({ target: "소가구주거 (원룸/빌라)", icon: "fa-cloud-showers-heavy", color: "text-cyan-700", bg: "bg-cyan-50", border: "border-cyan-200", points: ["외출 자제로 인한 배달 주문 폭증 대비 픽업 동선 정비 및 재고 확충", "비 오는 날 특수: 막걸리 발주 40% 상향 및 두부/김치 연관 진열", "가정간편식(HMR), 봉지라면 번들팩 등 쟁여두기 상품 발주 상향"] });
@@ -235,29 +230,29 @@
                 guides.push({ target: "주거/학원가 복합", icon: "fa-school", color: "text-teal-600", bg: "bg-teal-50", border: "border-teal-200", points: ["하교/퇴근 시간대 삼각김밥, 간편 조리빵 등 회전율 높은 FF 위주 전개", "10~20대 타겟 에너지드링크, 제로 탄산음료 냉장고 전면 노출", "카운터 FF (핫도그, 꼬치류) 하교 시간대 맞춤 조리"] });
             }
 
-            // 스포츠 이벤트(월드컵) 추가
+            // 스포츠 이벤트(월드컵 - 새벽/오전 시간대 특화 반영)
             if (matchedGames.length > 0) {
-                scriptText += `\n\n⚽ [빅 이벤트 안내] 이번 주 한국 월드컵 경기 일정(${matchedGames.map(g => g.mdKey.replace('-','/') + ' ' + g.matchInfo).join(', ')})이 있습니다! 경기 시청을 위한 안주 및 주류 폭발적 수요가 예상되니 절대 결품이 없도록 대비 바랍니다.`;
+                let gamesStr = matchedGames.map(g => g.mdKey.replace('-','/') + ' ' + g.matchInfo).join(', ');
+                scriptText += `\n\n⚽ [빅 이벤트 안내] 이번 주 월드컵 주요 경기(${gamesStr})가 예정되어 있습니다. 대부분의 경기가 새벽~오전에 열리는 점을 고려하여, 새벽 시청을 위한 각성 음료 및 아침 식사 대용품, 그리고 출근 전 해장용 상품 위주로 발주를 대폭 강화해 주세요.`;
                 
                 guides.unshift({ 
-                    target: "🔥 월드컵 특수 공통 (주거/유동 집중)", 
+                    target: "🔥 월드컵 특수 (새벽/오전 경기 집중 공략)", 
                     icon: "fa-futbol", 
                     color: "text-red-700", bg: "bg-red-50", border: "border-red-300", 
                     points: [
-                        "경기 시작 2~3시간 전 치킨25 배달/픽업 주문 폭주! 원부재료 2배 확보 및 사전 조리 가동",
-                        "WIC(냉장고) 내 캔맥주 번들팩 최대치 적재 및 안주류(마른안주, 족발 등) 카운터 전면 배치",
-                        "응원객 및 야간 취식 타겟 대형 스낵, 컵얼음 골든존 확장 운영"
+                        "잠 깨는 새벽 시청자 타겟: 카페25, 캔커피, 에너지 음료 골든존 전면 배치",
+                        "출출한 새벽 및 아침 식사 대용: 국물용 컵라면, 죽, 샌드위치, 김밥 발주 1.5배 확대",
+                        "기본 주류/안주 수요와 더불어 출근 전 해장 고객을 위한 숙취해소제, 비타민 음료, 무알콜 맥주 구색 강화"
                     ]
                 });
             }
 
-            plainScriptText = scriptText; // 복사용 저장
+            plainScriptText = scriptText;
             return { scriptText, guides };
         }
 
         function calculateWeatherAndCoaching() {
             const now = new Date("2026-06-03T10:14:10");
-            const days = ["일", "월", "화", "수", "목", "금", "토"];
             document.getElementById("todayBadge").innerText = `현재 기준: ${now.getFullYear()}.${now.getMonth()+1}.${now.getDate()}`;
 
             const sido = document.getElementById("sidoSelect").value;
@@ -298,7 +293,6 @@
 
             document.getElementById("weeklyWeatherContainer").innerHTML = htmlWeather;
 
-            // 이벤트 텍스트 바인딩 (수정 요청 사항 2번, 3번)
             const eventContainer = document.getElementById("eventTextContainer");
             let eventHtml = "";
             
@@ -318,7 +312,6 @@
                 eventContainer.innerHTML = eventHtml;
             }
 
-            // 가이드 생성 (수정 요청 사항 1번, 4번)
             let primaryWeather = "perfect";
             if(hotCount >= 3) primaryWeather = "hot_core";
             else if (rainCount >= 2) primaryWeather = "rain_heavy";
@@ -346,7 +339,7 @@
 
         function copyScript() {
             navigator.clipboard.writeText(plainScriptText).then(() => {
-                alert("코칭 스크립트 요약이 클립보드에 복사되었습니다.\n경영주님 소통 채널에 즉시 활용하세요!");
+                alert("종합 코칭 가이드 요약이 클립보드에 복사되었습니다.\n경영주님 소통 채널에 즉시 활용하세요!");
             });
         }
 
