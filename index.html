@@ -111,22 +111,50 @@
     </main>
 
     <script>
+        // ────────────────────────────────────────────────
+        // 시/도 → 시/군/구 목록 (표시명, 좌표 포함)
+        // ────────────────────────────────────────────────
         const regionStructure = {
-            daejeon: ["동구", "중구", "서구", "유성구", "대덕구"],
-            sejong: ["세종특별자치시"],
-            chungnam: ["천안시 동남구", "천안시 서북구", "공주시", "아산시", "서산시", "당진시", "보령시"],
-            gwangju: ["동구", "서구", "남구", "북구", "광산구"],
-            jeonbuk: ["전주시 완산구", "전주시 덕진구", "군산시", "익산시", "정읍시"],
-            jeonnam: ["목포시", "여수시", "순천시", "나주시", "광양시"]
-        };
-
-        const regionCoordinates = {
-            daejeon: { lat: 36.3504, lon: 127.3845 },
-            sejong: { lat: 36.4800, lon: 127.2890 },
-            chungnam: { lat: 36.8151, lon: 127.1139 },
-            gwangju: { lat: 35.1595, lon: 126.8526 },
-            jeonbuk: { lat: 35.8242, lon: 127.1480 },
-            jeonnam: { lat: 34.8118, lon: 126.3922 }
+            daejeon: [
+                { name: "동구",   lat: 36.3121, lon: 127.4544 },
+                { name: "중구",   lat: 36.3254, lon: 127.4213 },
+                { name: "서구",   lat: 36.3554, lon: 127.3831 },
+                { name: "유성구", lat: 36.3623, lon: 127.3564 },
+                { name: "대덕구", lat: 36.3463, lon: 127.4151 }
+            ],
+            sejong: [
+                { name: "세종특별자치시", lat: 36.4800, lon: 127.2890 }
+            ],
+            chungnam: [
+                { name: "천안시 동남구", lat: 36.8068, lon: 127.1522 },
+                { name: "천안시 서북구", lat: 36.8512, lon: 127.1139 },
+                { name: "공주시",        lat: 36.4465, lon: 127.1192 },
+                { name: "아산시",        lat: 36.7898, lon: 127.0020 },
+                { name: "서산시",        lat: 36.7845, lon: 126.4503 },
+                { name: "당진시",        lat: 36.8895, lon: 126.6458 },
+                { name: "보령시",        lat: 36.3332, lon: 126.6128 }
+            ],
+            gwangju: [
+                { name: "동구",   lat: 35.1455, lon: 126.9229 },
+                { name: "서구",   lat: 35.1519, lon: 126.8892 },
+                { name: "남구",   lat: 35.1336, lon: 126.9023 },
+                { name: "북구",   lat: 35.1740, lon: 126.9120 },
+                { name: "광산구", lat: 35.1396, lon: 126.7937 }
+            ],
+            jeonbuk: [
+                { name: "전주시 완산구", lat: 35.8194, lon: 127.1089 },
+                { name: "전주시 덕진구", lat: 35.8562, lon: 127.1352 },
+                { name: "군산시",        lat: 35.9677, lon: 126.7369 },
+                { name: "익산시",        lat: 35.9483, lon: 126.9577 },
+                { name: "정읍시",        lat: 35.5699, lon: 126.8560 }
+            ],
+            jeonnam: [
+                { name: "목포시", lat: 34.8118, lon: 126.3922 },
+                { name: "여수시", lat: 34.7604, lon: 127.6622 },
+                { name: "순천시", lat: 34.9506, lon: 127.4874 },
+                { name: "나주시", lat: 35.0160, lon: 126.7108 },
+                { name: "광양시", lat: 34.9408, lon: 127.6961 }
+            ]
         };
 
         const nationalHolidays = {
@@ -144,22 +172,33 @@
         let currentWeek = 'this';
         let plainScriptText = "";
 
+        // ────────────────────────────────────────────────
+        // 시/군/구 select 업데이트
+        // ────────────────────────────────────────────────
         function updateSigungu() {
             const sido = document.getElementById("sidoSelect").value;
             const select = document.getElementById("sigunguSelect");
             select.innerHTML = "";
-            regionStructure[sido].forEach(name => {
+            regionStructure[sido].forEach(item => {
                 const opt = document.createElement("option");
-                opt.value = name;
-                opt.textContent = name;
+                opt.value = item.name;
+                opt.textContent = item.name;
                 select.appendChild(opt);
             });
             calculateWeatherAndCoaching();
         }
 
+        // 선택된 시/군/구의 좌표 반환
+        function getSelectedCoord() {
+            const sido = document.getElementById("sidoSelect").value;
+            const sigungu = document.getElementById("sigunguSelect").value;
+            const found = regionStructure[sido].find(i => i.name === sigungu);
+            return found ? { lat: found.lat, lon: found.lon } : { lat: 36.35, lon: 127.38 };
+        }
+
         function setWeek(week) {
             currentWeek = week;
-            const activeClass = "py-2.5 text-sm font-bold rounded-lg border bg-blue-600 text-white border-blue-600 transition";
+            const activeClass   = "py-2.5 text-sm font-bold rounded-lg border bg-blue-600 text-white border-blue-600 transition";
             const inactiveClass = "py-2.5 text-sm font-bold rounded-lg border bg-white text-slate-600 border-slate-300 hover:bg-slate-50 transition";
             document.getElementById("btnThisWeek").className = week === 'this' ? activeClass : inactiveClass;
             document.getElementById("btnNextWeek").className = week === 'next' ? activeClass : inactiveClass;
@@ -175,30 +214,35 @@
                 let d = new Date(baseDate);
                 d.setDate(baseDate.getDate() + i);
                 let yyyy = d.getFullYear();
-                let mm = String(d.getMonth() + 1).padStart(2, '0');
-                let dd = String(d.getDate()).padStart(2, '0');
-                let mdKey = mm + "-" + dd;
+                let mm   = String(d.getMonth() + 1).padStart(2, '0');
+                let dd   = String(d.getDate()).padStart(2, '0');
+                let mdKey      = mm + "-" + dd;
                 let apiDateKey = yyyy + "-" + mm + "-" + dd;
                 result.push({
                     apiDateKey,
                     mdKey,
-                    dateString: (d.getMonth() + 1) + "/" + d.getDate(),
-                    dayLabel: daysShort[d.getDay()],
-                    isRedDay: (d.getDay() === 0 || !!nationalHolidays[mdKey]),
+                    dateString:  (d.getMonth() + 1) + "/" + d.getDate(),
+                    dayLabel:    daysShort[d.getDay()],
+                    isRedDay:    (d.getDay() === 0 || !!nationalHolidays[mdKey]),
                     holidayName: nationalHolidays[mdKey] || null,
-                    matchInfo: worldCupMatches[mdKey] || null
+                    matchInfo:   worldCupMatches[mdKey]  || null
                 });
             }
             return result;
         }
 
-        async function fetchRealWeather(sido, datesInfo) {
-            const coord = regionCoordinates[sido];
-            // Open-Meteo 최신 규격 반영: weathercode -> weather_code 변경
-            const url = "https://api.open-meteo.com/v1/forecast?latitude=" + coord.lat + "&longitude=" + coord.lon + "&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul&forecast_days=14";
+        // ────────────────────────────────────────────────
+        // 실시간 날씨 API (Open-Meteo) — 시/군/구 좌표 사용
+        // ────────────────────────────────────────────────
+        async function fetchRealWeather(coord, datesInfo) {
+            const url = "https://api.open-meteo.com/v1/forecast"
+                + "?latitude="  + coord.lat
+                + "&longitude=" + coord.lon
+                + "&daily=weather_code,temperature_2m_max,temperature_2m_min"
+                + "&timezone=Asia%2FSeoul&forecast_days=14";
             try {
                 const response = await fetch(url);
-                const data = await response.json();
+                const data     = await response.json();
                 return datesInfo.map(d => {
                     const index = data.daily.time.indexOf(d.apiDateKey);
                     let minTemp = 18, maxTemp = 25, status = "perfect", icon = "fa-sun";
@@ -208,19 +252,19 @@
                         const wmo = data.daily.weather_code[index];
                         if (wmo >= 51 && wmo <= 99) {
                             status = "rain_heavy";
-                            icon = (wmo >= 71 && wmo <= 77) ? "fa-snowflake" : "fa-umbrella";
+                            icon   = (wmo >= 71 && wmo <= 77) ? "fa-snowflake" : "fa-umbrella";
                         } else if (maxTemp >= 30) {
                             status = "hot_core";
-                            icon = "fa-temperature-high";
+                            icon   = "fa-temperature-high";
                         } else {
                             status = "perfect";
-                            icon = (wmo === 0) ? "fa-sun" : (wmo <= 3 ? "fa-cloud-sun" : "fa-cloud");
+                            icon   = (wmo === 0) ? "fa-sun" : (wmo <= 3 ? "fa-cloud-sun" : "fa-cloud");
                         }
                     }
                     return { ...d, minTemp, maxTemp, status, icon };
                 });
             } catch (error) {
-                console.error("날씨 데이터를 불러오는데 실패했습니다.", error);
+                console.error("날씨 데이터 로드 실패:", error);
                 return datesInfo.map(d => ({ ...d, minTemp: 18, maxTemp: 25, status: "perfect", icon: "fa-sun" }));
             }
         }
@@ -231,16 +275,22 @@
 
             if (primaryWeather === "hot_core") {
                 scriptText = "이번 주 무더운 폭염 날씨로 인해 유동인구가 많은 번화가와 야간 거주지 상권의 빙과, 음료 수요가 급증할 예정입니다. 아이스컵과 빙과류 재고 확보에 만전을 기해주십시오.";
-                guides.push({ target: "유동강세 (역세권/번화가)", icon: "fa-fire", color: "text-orange-600", bg: "bg-orange-50", border: "border-orange-200", points: ["아이스컵(일반/빅), 파우치 음료, 500ml 생수 전면 배치 및 재고 최대치 확보", "야간 유동인구 증가 대비 소형 컵과일, 아이스크림 보강", "이동 취식형 완제품(줄김밥, 햄버거) 결품 주의 및 카페25 기기 점검"] });
-                guides.push({ target: "주거밀착 (아파트/빌라)", icon: "fa-building", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200", points: ["열대야 대비 야간 홈술족 타겟 국산/수입 캔맥주 번들(4캔) 대량 적재", "가족 단위 통형 아이스크림 및 야간 간식류 1.5배 보강", "심야 시간대 조각 치킨류(카운터 FF) 소량 상시 노출"] });
+                guides.push({ target: "유동강세 (역세권/번화가)", icon: "fa-fire", color: "text-orange-600", bg: "bg-orange-50", border: "border-orange-200",
+                    points: ["아이스컵(일반/빅), 파우치 음료, 500ml 생수 전면 배치 및 재고 최대치 확보", "야간 유동인구 증가 대비 소형 컵과일, 아이스크림 보강", "이동 취식형 완제품(줄김밥, 햄버거) 결품 주의 및 카페25 기기 점검"] });
+                guides.push({ target: "주거밀착 (아파트/빌라)", icon: "fa-building", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200",
+                    points: ["열대야 대비 야간 홈술족 타겟 국산/수입 캔맥주 번들(4캔) 대량 적재", "가족 단위 통형 아이스크림 및 야간 간식류 1.5배 보강", "심야 시간대 조각 치킨류(카운터 FF) 소량 상시 노출"] });
             } else if (primaryWeather === "rain_heavy") {
                 scriptText = "이번 주 잦은 비 소식으로 외출이 줄면서 배달(우리동네GS) 수요와 오피스 상권의 구내 식사 수요가 크게 늘어날 전망입니다. 우산 전면 배치와 가정간편식 발주를 늘려주세요.";
-                guides.push({ target: "소가구주거 (원룸/빌라)", icon: "fa-cloud-showers-heavy", color: "text-cyan-700", bg: "bg-cyan-50", border: "border-cyan-200", points: ["외출 자제로 인한 배달 주문 폭증 대비 픽업 동선 정비 및 재고 확충", "비 오는 날 특수: 막걸리 발주 40% 상향 및 두부/김치 연관 진열", "가정간편식(HMR), 봉지라면 번들팩 등 쟁여두기 상품 발주 상향"] });
-                guides.push({ target: "근무지 (오피스/공단)", icon: "fa-briefcase", color: "text-indigo-600", bg: "bg-indigo-50", border: "border-indigo-200", points: ["점심시간 외부 식당 이동 감소 → 도시락, 조리면 등 식사 대용 FF 20% 증량", "매장 입구 비닐우산 및 장우산 대량 전면 배치", "오후 시간대 직장인 간식용 컵커피, 베이커리 다단 진열"] });
+                guides.push({ target: "소가구주거 (원룸/빌라)", icon: "fa-cloud-showers-heavy", color: "text-cyan-700", bg: "bg-cyan-50", border: "border-cyan-200",
+                    points: ["외출 자제로 인한 배달 주문 폭증 대비 픽업 동선 정비 및 재고 확충", "비 오는 날 특수: 막걸리 발주 40% 상향 및 두부/김치 연관 진열", "가정간편식(HMR), 봉지라면 번들팩 등 쟁여두기 상품 발주 상향"] });
+                guides.push({ target: "근무지 (오피스/공단)", icon: "fa-briefcase", color: "text-indigo-600", bg: "bg-indigo-50", border: "border-indigo-200",
+                    points: ["점심시간 외부 식당 이동 감소 → 도시락, 조리면 등 식사 대용 FF 20% 증량", "매장 입구 비닐우산 및 장우산 대량 전면 배치", "오후 시간대 직장인 간식용 컵커피, 베이커리 다단 진열"] });
             } else {
                 scriptText = "쾌적하고 맑은 날씨가 이어져 야외 나들이객이 많은 여행지 및 공원 주변 상권의 매출 활성화가 기대됩니다. 피크닉 용품 및 대용량 간편식 재고를 든든하게 채워주세요.";
-                guides.push({ target: "여행지 / 유원지", icon: "fa-tree", color: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-200", points: ["나들이객 타겟 대용량 생수(2L), 캔맥주, RTD 하이볼 골든존 집중 진열", "가족 단위 식사용 프리미엄 도시락, 샌드위치, 샐러드 발주 확대", "돗자리, 종이컵, 물티슈, 선크림 등 야외활동 특화 가판 팝업 구성"] });
-                guides.push({ target: "주거/학원가 복합", icon: "fa-school", color: "text-teal-600", bg: "bg-teal-50", border: "border-teal-200", points: ["하교/퇴근 시간대 삼각김밥, 간편 조리빵 등 회전율 높은 FF 위주 전개", "10~20대 타겟 에너지드링크, 제로 탄산음료 냉장고 전면 노출", "카운터 FF (핫도그, 꼬치류) 하교 시간대 맞춤 조리"] });
+                guides.push({ target: "여행지 / 유원지", icon: "fa-tree", color: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-200",
+                    points: ["나들이객 타겟 대용량 생수(2L), 캔맥주, RTD 하이볼 골든존 집중 진열", "가족 단위 식사용 프리미엄 도시락, 샌드위치, 샐러드 발주 확대", "돗자리, 종이컵, 물티슈, 선크림 등 야외활동 특화 가판 팝업 구성"] });
+                guides.push({ target: "주거/학원가 복합", icon: "fa-school", color: "text-teal-600", bg: "bg-teal-50", border: "border-teal-200",
+                    points: ["하교/퇴근 시간대 삼각김밥, 간편 조리빵 등 회전율 높은 FF 위주 전개", "10~20대 타겟 에너지드링크, 제로 탄산음료 냉장고 전면 노출", "카운터 FF (핫도그, 꼬치류) 하교 시간대 맞춤 조리"] });
             }
 
             if (matchedGames.length > 0) {
@@ -248,8 +298,7 @@
                 scriptText += "\n\n⚽ [빅 이벤트 안내] 이번 주 월드컵 주요 경기(" + gamesStr + ")가 예정되어 있습니다. 미국 현지 시차로 인한 새벽~오전 특수 상권 가이드를 확인하시고 아침 식사 대용식 및 각성 음료 위주로 발주를 대폭 강화해 주세요.";
                 guides.unshift({
                     target: "🔥 월드컵 새벽·오전 특수 (시차 맞춤 공략)",
-                    icon: "fa-futbol",
-                    color: "text-red-700", bg: "bg-red-50", border: "border-red-300",
+                    icon: "fa-futbol", color: "text-red-700", bg: "bg-red-50", border: "border-red-300",
                     points: [
                         "오전 경기 집관/응원족 집중: 경기 전후 취식 가능한 삼각김밥, 샌드위치, 줄김밥 등 식사 대용 FF류 발주 1.5배 상향",
                         "새벽~오전 각성 음료 특수: 카페25(원두커피), 에너지드링크, 캔커피 골든존 전면 진열 및 얼음컵 재고 최대 확보",
@@ -267,24 +316,27 @@
             const now = new Date();
             document.getElementById("todayBadge").innerText = "현재 기준: " + now.getFullYear() + "." + (now.getMonth() + 1) + "." + now.getDate();
 
-            const sido = document.getElementById("sidoSelect").value;
             const sigungu = document.getElementById("sigunguSelect").value;
             if (!sigungu) return;
 
-            document.getElementById("weeklyWeatherContainer").innerHTML = '<div class="col-span-full py-6"><div class="loader"></div><p class="text-center text-xs text-slate-500 mt-3">실시간 날씨 데이터를 불러오는 중입니다...</p></div>';
+            // 선택한 시/군/구의 개별 좌표 사용
+            const coord = getSelectedCoord();
+
+            document.getElementById("weeklyWeatherContainer").innerHTML =
+                '<div class="col-span-full py-6"><div class="loader"></div><p class="text-center text-xs text-slate-500 mt-3">실시간 날씨 데이터를 불러오는 중입니다...</p></div>';
 
             const datesInfo = getDatesList(currentWeek);
-            const forecast = await fetchRealWeather(sido, datesInfo);
+            const forecast  = await fetchRealWeather(coord, datesInfo);
 
             let htmlWeather = "";
             let hotCount = 0, rainCount = 0;
             let matchedHolidays = [], matchedGames = [];
 
             forecast.forEach(item => {
-                if (item.status === "hot_core") hotCount++;
+                if (item.status === "hot_core")   hotCount++;
                 if (item.status === "rain_heavy") rainCount++;
                 if (item.holidayName) matchedHolidays.push(item);
-                if (item.matchInfo) matchedGames.push(item);
+                if (item.matchInfo)   matchedGames.push(item);
 
                 let badge = item.status === "hot_core"
                     ? "<span class='text-[10px] bg-red-100 text-red-600 px-1 py-0.5 rounded font-bold'>폭염</span>"
@@ -292,7 +344,7 @@
                         ? "<span class='text-[10px] bg-blue-100 text-blue-600 px-1 py-0.5 rounded font-bold'>비/눈</span>"
                         : "<span class='text-[10px] bg-emerald-100 text-emerald-600 px-1 py-0.5 rounded font-bold'>맑음</span>";
 
-                let dayClass = item.isRedDay ? "text-red-600 font-extrabold" : "text-slate-600 font-bold";
+                let dayClass   = item.isRedDay ? "text-red-600 font-extrabold" : "text-slate-600 font-bold";
                 let holidayTag = item.holidayName
                     ? "<div class='absolute -top-2 right-0 text-[10px] bg-red-500 text-white font-bold px-1.5 py-0.5 rounded-full'>" + item.holidayName + "</div>"
                     : "";
@@ -300,17 +352,18 @@
                 let gridMatchBadge = "";
                 if (item.matchInfo) {
                     if (item.matchInfo.includes("대한민국")) {
-                        let parts = item.matchInfo.split('/');
-                        let koPart = parts.find(p => p.includes("대한민국")) || "";
+                        let parts     = item.matchInfo.split('/');
+                        let koPart    = parts.find(p => p.includes("대한민국")) || "";
                         let timeMatch = koPart.match(/(오전|오후)\s*\d+시/);
-                        let timeStr = timeMatch ? timeMatch[0] : "경기일";
+                        let timeStr   = timeMatch ? timeMatch[0] : "경기일";
                         gridMatchBadge = "<div class='text-[10px] bg-red-600 text-white font-extrabold px-1.5 py-0.5 rounded mt-1 pulse-badge'>⚽ 韓 (" + timeStr + ")</div>";
                     } else {
                         gridMatchBadge = "<div class='text-[10px] bg-slate-200 text-slate-700 font-medium px-1 py-0.5 rounded mt-1'>⚽ 월드컵</div>";
                     }
                 }
 
-                htmlWeather += "<div class='relative flex flex-col items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-center space-y-1 min-h-[135px]'>" +
+                htmlWeather +=
+                    "<div class='relative flex flex-col items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-center space-y-1 min-h-[135px]'>" +
                     holidayTag +
                     "<div class='text-[11px] text-slate-400 font-medium'>" + item.dateString + "</div>" +
                     "<div class='text-xs " + dayClass + "'>" + item.dayLabel + "요일</div>" +
@@ -339,9 +392,12 @@
                         }
                         return "<span class='text-slate-600 font-medium'>" + trimmed + "</span>";
                     });
-                    return "<div class='flex items-center flex-wrap gap-1 bg-white p-2 rounded-lg border border-slate-200 w-full'><span class='text-blue-700 font-extrabold bg-blue-50 px-2 py-0.5 rounded border border-blue-200 mr-1.5'>" + g.dateString + "(" + g.dayLabel + ")</span> " + highlightedParts.join(' <span class="text-slate-300">/</span> ') + "</div>";
+                    return "<div class='flex items-center flex-wrap gap-1 bg-white p-2 rounded-lg border border-slate-200 w-full'>" +
+                        "<span class='text-blue-700 font-extrabold bg-blue-50 px-2 py-0.5 rounded border border-blue-200 mr-1.5'>" + g.dateString + "(" + g.dayLabel + ")</span> " +
+                        highlightedParts.join(' <span class="text-slate-300">/</span> ') + "</div>";
                 }).join('');
-                eventHtml += "<div class='text-sm font-bold text-slate-900 flex flex-col gap-1.5 w-full'><div class='flex items-center text-blue-700 font-bold'><i class='fa-solid fa-futbol mr-1.5'></i>2026 월드컵 주요 경기 상세 일정</div>" + gStr + "</div>";
+                eventHtml += "<div class='text-sm font-bold text-slate-900 flex flex-col gap-1.5 w-full'>" +
+                    "<div class='flex items-center text-blue-700 font-bold'><i class='fa-solid fa-futbol mr-1.5'></i>2026 월드컵 주요 경기 상세 일정</div>" + gStr + "</div>";
             }
 
             if (eventHtml === "") {
@@ -354,20 +410,25 @@
             }
 
             let primaryWeather = "perfect";
-            if (hotCount >= 3) primaryWeather = "hot_core";
+            if      (hotCount  >= 3) primaryWeather = "hot_core";
             else if (rainCount >= 2) primaryWeather = "rain_heavy";
 
             const { scriptText, guides } = buildUnifiedGuide(primaryWeather, matchedHolidays, matchedGames);
 
             let formattedScript = scriptText.replace(/\n/g, '<br>');
-            formattedScript = formattedScript.replace(/((오전|오후)\s*\d+시[^\/]*?대한민국\s*vs\s*[가-힣\s]+|대한민국 준결승 경기)/g,
-                '<span class="text-red-600 font-extrabold bg-red-50 px-1 rounded border border-red-300">$1</span>');
+            formattedScript = formattedScript.replace(
+                /((오전|오후)\s*\d+시[^\/]*?대한민국\s*vs\s*[가-힣\s]+|대한민국 준결승 경기)/g,
+                '<span class="text-red-600 font-extrabold bg-red-50 px-1 rounded border border-red-300">$1</span>'
+            );
             document.getElementById("coachingQuote").innerHTML = formattedScript;
 
             let guidesHtml = "";
             guides.forEach(g => {
-                let lis = g.points.map(p => "<li class='flex items-start'><i class='fa-solid fa-check text-[10px] mt-1 mr-2 opacity-60'></i><span>" + p + "</span></li>").join('');
-                guidesHtml += "<div class='p-4 rounded-xl border " + g.bg + " " + g.border + "'>" +
+                let lis = g.points.map(p =>
+                    "<li class='flex items-start'><i class='fa-solid fa-check text-[10px] mt-1 mr-2 opacity-60'></i><span>" + p + "</span></li>"
+                ).join('');
+                guidesHtml +=
+                    "<div class='p-4 rounded-xl border " + g.bg + " " + g.border + "'>" +
                     "<h4 class='font-bold text-sm " + g.color + " mb-2.5 flex items-center'><i class='fa-solid " + g.icon + " mr-1.5'></i> " + g.target + "</h4>" +
                     "<ul class='text-xs text-slate-700 space-y-1.5 leading-relaxed font-medium'>" + lis + "</ul>" +
                     "</div>";
